@@ -18,7 +18,7 @@ def browse(request, proj_slug, commit = 'master', path = ''):
 
     file = tree
     for i in path.split('/'):
-        file   = file.get(path)
+        file   = file.get(i)
 
     if not hasattr(file, 'data'): # Hack - but no better way?
         return render_to_response('browser/directory.html', {
