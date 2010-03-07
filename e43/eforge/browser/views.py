@@ -12,7 +12,7 @@ import git
 
 def browse(request, proj_slug, commit = 'master', path = ''):
     project = get_object_or_404(Project, slug=proj_slug)
-    repo    = git.Repo('/export/home/owenshep/dev/TCWiki/')
+    repo    = git.Repo(project.repo_path)
     gcommit = repo.commit(commit)
     tree    = gcommit.tree
 
