@@ -17,7 +17,7 @@ def browse(request, proj_slug, commit = 'master', path = ''):
     tree    = gcommit.tree
 
     if path.endswith('/'):
-        path = path[:-2]
+        path = path[:-1]
 
     if len(path) <> 0:
         file   = tree.get(path)
