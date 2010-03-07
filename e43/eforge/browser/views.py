@@ -17,7 +17,7 @@ def browse(request, proj_slug, commit = 'master', path = ''):
     tree    = gcommit.tree
 
     file = tree
-    for i in path.split('/')
+    for i in path.split('/'):
         file   = file.get(path)
 
     if not hasattr(file, 'data'): # Hack - but no better way?
