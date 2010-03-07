@@ -28,3 +28,21 @@ class GitBlameNode(template.Node):
         except Exception, e:
             return str(e)
 
+
+@register.tag
+def git_is_file(parser, token):
+    try:
+        tag_name, file, as, var = toke.split_contents()
+    except ValueError:
+         raise template.TemplateSyntaxError, "%r tag called wrong" % token.contents.split()[0]
+    return GitIsFileNode(file, var)
+
+class GitIsFileNode(template.Node):
+    def __init__(self, file, var):
+        self.file     = template.Variable(file)
+        self.var_name = var
+
+    def render(self, context):
+        file = self.file.resolve(context)
+        context[self.var_name] = isinstance(file, git.blob.Blob)
+

@@ -25,30 +25,25 @@ def browse(request, proj_slug, commit = 'master', path = ''):
         file   = tree
 
     if not hasattr(file, 'data'): # Hack - but no better way?
-        return browse_dir(request, project, repo, commit, gcommit, tree, file)
+        return render_to_response('browser/directory.html', {
+            'project':   project,
+            'repo':      repo,
+            'commit':    commit,
+            'gcommit':   gcommit,
+            'directory': file,
+            'path':      path,
+        }, context_instance=RequestContext(request))
     else:
-        return browse_file(request, project, repo, commit, gcommit, tree, file)
+        lexer       = guess_lexer_for_filename(file.basename, file.data)
+        formatter   = HtmlFormatter(linenos=True, cssclass='source')
+        highlighted = highlight(file.data, lexer, formatter)
 
-def browse_dir(request, project, repo, commit, gcommit, tree, directory):
-    return render_to_response('browser/directory.html', {
-        'project':   project,
-        'repo':      repo,
-        'commit':    commit,
-        'gcommit':   gcommit,
-        'directory': directory,
-    }, context_instance=RequestContext(request))
-
-def browse_file(request, project, repo, commit, gcommit, tree, file):
-    lexer       = guess_lexer_for_filename(file.basename, file.data)
-    formatter   = HtmlFormatter(linenos=True, cssclass='source')
-    highlighted = highlight(file.data, lexer, formatter)
-
-    return render_to_response('browser/file.html', {
-        'project':     project,
-        'repo':        repo,
-        'commit':      commit,
-        'gcommit':     gcommit,
-        'file':        file,
-        'styles':      formatter.get_style_defs(),
-        'highlighted': highlighted,
-    }, context_instance=RequestContext(request))
+        return render_to_response('browser/file.html', {
+            'project':     project,
+            'repo':        repo,
+            'commit':      commit,
+            'gcommit':     gcommit,
+            'file':        file,
+            'styles':      formatter.get_style_defs(),
+            'highlighted': highlighted,
+        }, context_instance=RequestContext(request))
