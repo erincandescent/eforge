@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render_to_response, redirect
@@ -7,7 +8,7 @@ from pygments.lexers import guess_lexer_for_filename
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 
-from e43.eforge.models import Project
+from eforge.models import Project
 import git
 
 def browse(request, proj_slug, commit = 'master', path = ''):

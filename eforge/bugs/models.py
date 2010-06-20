@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 from django.db import models
-from e43.eforge.models import Project
+from eforge.models import Project
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings

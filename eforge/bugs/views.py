@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.template import RequestContext
 from django.contrib.auth.models import User
@@ -7,7 +8,7 @@ from django.views.generic.list_detail import object_list
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django import forms
-from e43.eforge.models import Project
+from eforge.models import Project
 from models import Component, Bug, Comment, Attachment, Action
 
 class BugForm(forms.ModelForm):
