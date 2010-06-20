@@ -114,7 +114,7 @@ class GitFile(IFile, StringIO.StringIO):
         self.repo = repo
         self.file = file
         
-        self.data = file.get_data()
+        self.data = file.data
         
         IFile.__init__(self, parent, name)
         StringIO.StringIO.__init__(self, self.data)
