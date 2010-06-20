@@ -9,21 +9,31 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django import forms
 from eforge.models import Project
-from models import Component, Bug, Comment, Attachment, Action
+from models import *
 
 class BugForm(forms.ModelForm):
     class Meta:
         model = Bug
         exclude   = ('watchers', 'project', 'submitter')
-        protected = ('title', 'priority', 'issue_type', 'owner', 'depends', 'component')
+        protected = ('title', 'priority', 'issue_type', 'owner', 'depends', 'component',
+                     'status', 'resolution')
 
     def __init__(self, *args, **kwargs):
         super(BugForm, self).__init__(*args, **kwargs)
         self.fields['component'].queryset = Component.objects.filter(project=self.instance.project)
 
+    def clean(self):
+        try:
+            int(self.cleaned_data['resolution'])
+        except Exception, e:
+            self.cleaned_data['resolution'] = 0
+            
+        return super(BugForm, self).clean()
+
     def protect_clean(self, after):
         for field in self.Meta.protected:
             self.cleaned_data[field] = getattr(self.instance, field)
+        after(self)
 
     def protect(self, user):
         if not user.has_perm('bugs.change_bug'):
@@ -93,7 +103,7 @@ def newbug(request, proj_slug):
     comment = Comment(bug=bug, submitter=user)
 
     if request.method == 'POST':
-        bug_form     = BugForm(request.POST, instance=bug)
+        bug_form     = BugForm(request.POST, instance=bug, prefix='bug')
         comment_form = CommentForm(request.POST, instance=comment, prefix='comment')
         attach_forms = AttachmentFormSet(request.POST, request.FILES, prefix='attach', queryset=Attachment.objects.none())
         
@@ -114,9 +124,6 @@ def newbug(request, proj_slug):
         comment_form = CommentForm(prefix='comment', instance=comment)
         attach_forms = AttachmentFormSet(prefix='attach', queryset=Attachment.objects.none())
 
-    bug_form.as_table()
-    comment_form.as_table()
-    attach_forms.as_table()
     return render_to_response('bugs/newbug.html', {
         'project':      project,
         'bug_form':     bug_form,
@@ -124,9 +131,40 @@ def newbug(request, proj_slug):
         'attach_forms': attach_forms,
     }, context_instance=RequestContext(request))
 
+class SearchForm(forms.Form):
+    def __init__(self, proj, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.project = proj
+        self.fields['component'].queryset=Component.objects.filter(project=self.project)
+    
+    def clean(self):
+        for f in self.fields:
+            if len(self.cleaned_data[f]) == 0:
+                if f == 'status':
+                    self.cleaned_data[f] = [1, 2, 3, 4]
+                else:
+                    self.cleaned_data[f] = [x[0] for x in self.fields[f].choices]
+        return super(SearchForm, self).clean()
+    
+    issue_type = forms.MultipleChoiceField(choices=IssueType, required=False)
+    priority   = forms.MultipleChoiceField(choices=IssuePriority, required=False)
+    status     = forms.MultipleChoiceField(choices=IssueStatus, required=False)
+    component  = forms.ModelMultipleChoiceField(queryset=Component.objects, required=False)
+    
+
 def listbugs(request, proj_slug):
     project = get_object_or_404(Project, slug=proj_slug)
-    query=project.bug_set.all()
+
+    search_form = SearchForm(project, request.GET)
+    if search_form.is_valid():
+        query = project.bug_set.filter(
+            issue_type__in=search_form.cleaned_data['issue_type'],
+              priority__in=search_form.cleaned_data['priority'],
+                status__in=search_form.cleaned_data['status'],
+             component__in=search_form.cleaned_data['component']
+        ).all()
+    else:
+        query = project.bug_set.all()
 
     page_size = 50 if 'num' not in request.GET else request.GET['num']
     page = 1 if 'page' not in request.GET else request.GET['page']
@@ -137,7 +175,10 @@ def listbugs(request, proj_slug):
         template_name='bugs/buglist.html',
         paginate_by=page_size,
         page=page,
-        extra_context={'project': project}
+        extra_context={
+            'project': project,
+            'search':  search_form,
+        }
     )
 
 def attachment(request, proj_slug, attach_id):

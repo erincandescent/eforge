@@ -26,12 +26,31 @@ IssueType = (
     (3, 'Patch'),
 )
 
+IssueStatus = (
+    (1, 'New'),
+    (2, 'Assigned'),
+    (3, 'Reopened'),
+    (4, 'In Progress'),
+    (5, 'Resolved'),
+)
+
+IssueResolution = (
+    (1, 'Fixed'),
+    (2, 'Invalid'),
+    (3, 'Won\'t Fix'),
+    (4, 'Duplicate'),
+    (5, 'Works for me'),
+    (6, 'Incomplete'),
+)
 class Bug(models.Model):
     project    = models.ForeignKey(Project)
     component  = models.ForeignKey(Component)
     priority   = models.SmallIntegerField(choices=IssuePriority, default=4)
     issue_type = models.SmallIntegerField(choices=IssueType, default=1)
     title      = models.CharField(max_length=50)
+    
+    status     = models.SmallIntegerField(choices=IssueStatus, default=1)
+    resolution = models.SmallIntegerField(choices=IssueResolution, default=0, blank=True)
     
     submitter  = models.ForeignKey(User, related_name='submitted_bugs')
     owner      = models.ForeignKey(User, related_name='owned_bugs', blank=True)
@@ -47,6 +66,18 @@ class Bug(models.Model):
     @property
     def priority_name(self):
         return IssuePriority[self.priority-1][1]
+
+    @property
+    def status_name(self):
+        return IssueStatus[self.status-1][1]
+        
+    @property
+    def resolution_name(self):
+        return IssueResolution[self.resolution-1][1]
+
+    @property
+    def is_resolved(self):
+        return self.status == 5
 
     @property
     def slug(self):
@@ -107,6 +138,7 @@ class Action(models.Model):
 
     @classmethod
     def for_change(self, bug, comment, field, oldv, newv):
+        print 'for_change %s %s %s %s %s' % (bug, comment, field, oldv, newv)
         changed = False
         valstr  = str(newv)
         if field == 'depends' or field =='blocks':
@@ -117,6 +149,18 @@ class Action(models.Model):
                 valstr = autojoin(newv)
             else:
                 valstr = 'none'
+        elif field == 'issue_type':
+            valstr = IssueType[newv-1][1]
+            changed = oldv <> newv
+        elif field == 'priority':
+            valstr = IssuePriority[newv-1][1]
+            changed = oldv <> newv
+        elif field == 'status':
+            valstr = IssueStatus[newv-1][1]
+            changed = oldv <> newv
+        elif field == 'resolution':
+            valstr = IssueResolution[newv-1][1]
+            changed = oldv <> newv
         elif isinstance(newv, models.Model):
             oldv = oldv.pk
             newv = newv.pk
@@ -136,10 +180,12 @@ class Action(models.Model):
             name = self.field[0].upper() + self.field[1:]
         curval = getattr(self.bug, self.field)
         val    = self.value
+        if name == 'Issue_type':
+            name = 'Issue Type'
         if isinstance(curval, models.Model):
             try:
                 val = curval.__class__.objects.get(pk=val)
             except:
                 pass
-        return "Changed %s to %s" % (name, val)
+        return "Changed %s to \"%s\"" % (name, val)
 

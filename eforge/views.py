@@ -1,16 +1,18 @@
+# -*- coding: utf-8 -*-
 # Create your views here.
-from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
-import models
-from TCWiki import views as WViews
+from eforge import plugins
+from eforge.models import Project
+from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.http import HttpResponse
+from django.template import RequestContext
 
-def wiki_page(request, proj_slug, name='Main_page'):
-    project = get_object_or_404(models.Project, slug=proj_slug)
-    wiki_info = {
-        'pageloc': (lambda page: reverse('wiki-page', args=[proj_slug, page])),
-        'wiki_id': project.id,
-        'pslug':   project.slug,
-        'project': project,
-        'context': {'project': project},
-    }
-    return WViews.page(request, name, wiki_info=wiki_info)
+def summary(request, proj_slug):
+    project = get_object_or_404(Project, slug=proj_slug)
+    return render_to_response('eforge/summary.html', {
+        'project': project
+    }, context_instance=RequestContext(request))
+
+def about(request):
+    return render_to_response('about.html', {
+        'plugins': plugins.plugins
+    }, context_instance=RequestContext(request))

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from eforge.menu import ItemOrder
+import repo
 
 EFORGE_PLUGIN = {
-    'name':     'EForge Core',
+    'name':     'Git Repository Browser',
     'credit':   'Copyright &copy; 2010 Element43 and contributors',
-    
+
     'provides': {
-        'mnu': [('project-page', ItemOrder(000, 'Summary'))],
+        'vcs': [('git',    repo.GitRepository)],
     },
 }
