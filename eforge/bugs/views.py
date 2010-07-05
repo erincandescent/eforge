@@ -93,6 +93,7 @@ def showbug(request, proj_slug, bug_id):
         'bug_form':     bug_form,
         'comment_form': comment_form,
         'attach_forms': attach_forms,
+        'edit_form':    edit_form,
     }, context_instance=RequestContext(request))
 
 @login_required
