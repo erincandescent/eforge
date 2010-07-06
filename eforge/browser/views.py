@@ -13,7 +13,7 @@ from eforge import plugins
 
 def plugin_for(path):
     vcs, path = path.split(':', 1)
-    
+
     return plugins.provider['vcs'][vcs](path)
 
 def descend_tree(repo, tree, path):
@@ -22,22 +22,50 @@ def descend_tree(repo, tree, path):
         for i in path.split('/'):
             if len(i) == 0:
                 continue
-            
+
             if obj.is_file:
                 raise Http404
-            
+
             obj = obj.child(i)
         return obj
     #except:
     #    raise Http404
 
-def browse(request, proj_slug, commit = None, path = ''):
+def history(request, proj_slug):
+    project = get_object_or_404(Project, slug=proj_slug)
+    repo = plugin_for(project.repo_path)
+    revisions = repo.revisions
+
+    start = 0
+    num   = 50
+    if 's' in request.GET:
+        start = int(request.GET['s'])
+    if 'n' in request.GET:
+        num = int(request.GET['n'])
+
+    end = min(start + num, len(revisions))
+    prev = max(0, start - num)
+
+    return render_to_response('browser/history.html', {
+        'project':   project,
+        'repo':      repo,
+        'revisions': revisions[start:end],
+        'is_end':    (end >= len(revisions)),
+        'is_start':  (start == 0),
+        'start':     start+1,
+        'next':      end,
+        'num':       num,
+        'prev':      prev,
+        'total':     len(revisions),
+    }, context_instance=RequestContext(request))
+
+def file(request, proj_slug, commit = None, path = ''):
     project = get_object_or_404(Project, slug=proj_slug)
     #try:
     repo = plugin_for(project.repo_path)
     #except:
     #    raise Http404
-    
+
     if commit is None:
         ncommit = repo.head
         commit  = ncommit.id
@@ -68,7 +96,7 @@ def browse(request, proj_slug, commit = None, path = ''):
             formatter   = HtmlFormatter(linenos=True, cssclass='source')
             highlighted = highlight(obj.data, lexer, formatter)
             styles    = formatter.get_style_defs()
-        
+
         return render_to_response('browser/file.html', {
             'project':     project,
             'repo':        repo,
@@ -78,3 +106,16 @@ def browse(request, proj_slug, commit = None, path = ''):
             'styles':      styles,
             'highlighted': highlighted,
         }, context_instance=RequestContext(request))
+
+def revision(request, proj_slug, commit):
+    project = get_object_or_404(Project, slug=proj_slug)
+    repo = plugin_for(project.repo_path)
+
+    ncommit = repo.revision(commit)
+
+    return render_to_response('browser/revision.html', {
+            'project':     project,
+            'repo':        repo,
+            'commit':      commit,
+            'rev':         ncommit,
+    }, context_instance=RequestContext(request))

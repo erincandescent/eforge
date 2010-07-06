@@ -2,7 +2,8 @@
 from django.conf.urls.defaults import *
 
 patterns = patterns('eforge.browser.views',
-    url('^(?P<commit>\w+)/(?P<path>.*)$',          'browse', name='browse-path'),
-    url('^(?P<commit>\w+)/$',                      'browse', name='browse-revision'),
-    url('^$',                                      'browse', name='browse-master'),
+    url('^file/(?P<commit>\w+)/$',                     'file',     name='browse-rootdir'),
+    url('^file/(?P<commit>\w+)/(?P<path>.*)$',         'file',     name='browse-path'),
+    url('^rev/(?P<commit>\w+)/$',                      'revision', name='browse-revision'),
+    url('^$',                                          'history',  name='browse-master'),
 )
