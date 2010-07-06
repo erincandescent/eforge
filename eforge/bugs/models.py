@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from eforge.models import Project
+from eforge.utils.picklefield import PickledObjectField
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -48,15 +49,15 @@ class Bug(models.Model):
     priority   = models.SmallIntegerField(choices=IssuePriority, default=4)
     issue_type = models.SmallIntegerField(choices=IssueType, default=1)
     title      = models.CharField(max_length=50)
-    
+
     status     = models.SmallIntegerField(choices=IssueStatus, default=1)
     resolution = models.SmallIntegerField(choices=IssueResolution, default=0, blank=True)
-    
+
     submitter  = models.ForeignKey(User, related_name='submitted_bugs')
-    owner      = models.ForeignKey(User, related_name='owned_bugs', blank=True)
+    owner      = models.ForeignKey(User, related_name='owned_bugs', blank=True, null=True)
 
     depends    = models.ManyToManyField('self', symmetrical=False, related_name='blocks', blank=True)
-    
+
     watchers   = models.ManyToManyField(User, related_name='watching_bugs', blank=True)
 
     @property
@@ -70,7 +71,7 @@ class Bug(models.Model):
     @property
     def status_name(self):
         return IssueStatus[self.status-1][1]
-        
+
     @property
     def resolution_name(self):
         return IssueResolution[self.resolution-1][1]
@@ -91,7 +92,7 @@ class Bug(models.Model):
     @property
     def url(self):
         return reverse('bug-show', args=[self.project.slug, self.id])
-    
+
     def __unicode__(self):
         return self.slug
 
@@ -123,53 +124,110 @@ class Attachment(models.Model):
     def url(self):
         return reverse('bug-attachment', args=[self.bug.project.slug, self.id])
 
-def autojoin(l):
-    s = unicode(l[0])
+# Renderers for action fields:
+def component_renderer(old, to):
+    cold = Component.objects.get(pk=old)
+    cto   = Component.objects.get(pk=to)
+    return 'Changed Component from %s to %s' % (cold, cto)
+
+def priority_renderer(old, to):
+    pold = IssuePriority[old-1][1]
+    pto   = IssuePriority[to-1][1]
+    return 'Changed Priority from %s to %s' % (pold, pto)
+
+def issue_type_renderer(old, to):
+    told = IssueType[old-1][1]
+    tto   = IssueType[to-1][1]
+    return 'Changed Issue Type from %s to %s' % (told, tto)
+
+def title_renderer(old, to):
+    return 'Changed Title from "%s" to "%s"' % (old, to)
+
+def status_renderer(old, to):
+    sold = IssueStatus[old-1][1]
+    sto   = IssueStatus[to-1][1]
+    return 'Changed Issue Type from %s to %s' % (sold, sto)
+
+def resolution_renderer(old, to):
+    rto = IssueResolution[to-1][1]
+    return 'Set resolution to %s' % rto
+
+def owner_renderer(old, to):
+    if old and to:
+        oold = User.objects.get(pk=old)
+        oto   = User.objects.get(pk=to)
+        return 'Changed Owner from %s to %s' % (oold, oto)
+    elif old:
+        oold = User.objects.get(pk=old)
+        return 'Removed assignment to %s' % oold
+    else:
+        oto   = User.objects.get(pk=to)
+        return 'Assigned to %s' % oto
+
+def autojoin(l, format):
+    if len(l) == 0: return ''
+    l = list(l)
+    s = format(l[0])
     rem = l[1:]
     for o in rem:
-        s += ', ' + unicode(o)
+        s += ', ' + format(o)
     return s
+
+def get_dep(id):
+    return Bug.objects.get(pk=id)
+
+def depends_renderer(old, to):
+    sold = set(old)
+    sto   = set(to)
+
+    removed = sold - sto
+    added   = sto - sold
+
+    tremoved = autojoin(removed, get_dep)
+    tadded   = autojoin(added,   get_dep)
+
+    if len(removed) == 0:
+        return 'Added dependencies on %s' % tadded
+    elif len(added) == 0:
+        return 'Removed dependencies on %s' % tremoved
+    else:
+        return 'Removed dependencies on %s; added %s' % (tadded, tremoved)
+
+action_renderer = {
+    'component':        component_renderer,
+    'priority':         priority_renderer,
+    'issue_type':       issue_type_renderer,
+    'title':            title_renderer,
+    'status':           status_renderer,
+    'resolution':       resolution_renderer,
+    'owner':            owner_renderer,
+    'depends':          depends_renderer,
+}
 
 class Action(models.Model):
     bug       = models.ForeignKey(Bug)
     comment   = models.ForeignKey(Comment)
     field     = models.TextField(max_length=32)
-    value     = models.TextField(max_length=32)
+    value     = PickledObjectField()
 
     @classmethod
     def for_change(self, bug, comment, field, oldv, newv):
         print 'for_change %s %s %s %s %s' % (bug, comment, field, oldv, newv)
         changed = False
         valstr  = str(newv)
+        if isinstance(oldv, models.Model): oldv = oldv.pk
+        if isinstance(newv, models.Model): newv = newv.pk
+
         if field == 'depends' or field =='blocks':
-            soldv = set(oldv.all())
-            snewv = set(newv)
-            changed = len(soldv ^ snewv)
-            if len(newv):
-                valstr = autojoin(newv)
-            else:
-                valstr = 'none'
-        elif field == 'issue_type':
-            valstr = IssueType[newv-1][1]
-            changed = oldv <> newv
-        elif field == 'priority':
-            valstr = IssuePriority[newv-1][1]
-            changed = oldv <> newv
-        elif field == 'status':
-            valstr = IssueStatus[newv-1][1]
-            changed = oldv <> newv
-        elif field == 'resolution':
-            valstr = IssueResolution[newv-1][1]
-            changed = oldv <> newv
-        elif isinstance(newv, models.Model):
-            oldv = oldv.pk
-            newv = newv.pk
+            oldv = [o.pk for o in oldv.all()]
+            newv = [o.pk for o in newv]
+            changed = len(set(oldv) ^ set(newv))
             changed = oldv <> newv
         else:
             changed = oldv <> newv
 
         if changed:
-            a = Action(bug=bug, comment=comment, field=field, value=valstr)
+            a = Action(bug=bug, comment=comment, field=field, value=(oldv, newv))
             a.save()
             return a
 
@@ -177,15 +235,12 @@ class Action(models.Model):
         try:
             name  = getattr(Bug, self.field).verbose_name
         except AttributeError:
-            name = self.field[0].upper() + self.field[1:]
+            name = self.field.title()
         curval = getattr(self.bug, self.field)
         val    = self.value
+
         if name == 'Issue_type':
             name = 'Issue Type'
-        if isinstance(curval, models.Model):
-            try:
-                val = curval.__class__.objects.get(pk=val)
-            except:
-                pass
-        return "Changed %s to \"%s\"" % (name, val)
+
+        return action_renderer[self.field](val[0], val[1])
 

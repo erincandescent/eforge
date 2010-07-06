@@ -27,7 +27,7 @@ class BugForm(forms.ModelForm):
             int(self.cleaned_data['resolution'])
         except Exception, e:
             self.cleaned_data['resolution'] = 0
-            
+
         return super(BugForm, self).clean()
 
     def protect_clean(self, after):
@@ -42,9 +42,10 @@ class BugForm(forms.ModelForm):
             self.clean = lambda: self.protect_clean(self.clean)
 
     def save_actions(self, comment):
+        bugobj = Bug.objects.get(pk=self.instance.pk)
         for k in self.fields:
             newv = self.cleaned_data[k]
-            oldv = getattr(self.instance, k)
+            oldv = getattr(bugobj, k)
             Action.for_change(self.instance, comment, k, oldv, newv)
 
 class CommentForm(forms.ModelForm):
@@ -107,7 +108,7 @@ def newbug(request, proj_slug):
         bug_form     = BugForm(request.POST, instance=bug, prefix='bug')
         comment_form = CommentForm(request.POST, instance=comment, prefix='comment')
         attach_forms = AttachmentFormSet(request.POST, request.FILES, prefix='attach', queryset=Attachment.objects.none())
-        
+
         if bug_form.is_valid() and comment_form.is_valid() and attach_forms.is_valid():
             bug = bug_form.save()
             comment = comment_form.save(commit=False)
@@ -137,7 +138,7 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.project = proj
         self.fields['component'].queryset=Component.objects.filter(project=self.project)
-    
+
     def clean(self):
         for f in self.fields:
             if len(self.cleaned_data[f]) == 0:
@@ -146,12 +147,12 @@ class SearchForm(forms.Form):
                 else:
                     self.cleaned_data[f] = [x[0] for x in self.fields[f].choices]
         return super(SearchForm, self).clean()
-    
+
     issue_type = forms.MultipleChoiceField(choices=IssueType, required=False)
     priority   = forms.MultipleChoiceField(choices=IssuePriority, required=False)
     status     = forms.MultipleChoiceField(choices=IssueStatus, required=False)
     component  = forms.ModelMultipleChoiceField(queryset=Component.objects, required=False)
-    
+
 
 def listbugs(request, proj_slug):
     project = get_object_or_404(Project, slug=proj_slug)
