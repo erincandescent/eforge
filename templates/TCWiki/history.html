@@ -1,0 +1,18 @@
+{% extends "TCWiki/page.html" %}
+{%block header%}History - {{title}}{%endblock%}
+{%block body%}
+    <form method='GET'>
+    <table>
+	<tr><th>From</th><th>To</th><th>Revision</th></tr>
+	{% for revision in revisions %}
+	<tr>
+	  <td><input type="radio" name="rev" value="{{revision.id}}"></td>
+	  <td><input type="radio" name="to" value="{{revision.id}}"></td>
+	  <td><a href='{%url wiki-page wiki.pslug name%}?rev={{revision.id}}'>
+	    {{revision.date|date}} by {{revision.author.username}}</a>: <i>{{revision.comment}}</i></td>
+	</tr>
+	{% endfor %}
+    </table>
+    <input type='submit' name='a' value='Compare' />
+    </form>
+{%endblock%}

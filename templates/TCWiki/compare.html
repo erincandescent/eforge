@@ -1,0 +1,14 @@
+{% extends "TCWiki/page.html" %}
+{%block header%}Compare Revisions - {{title}}{%endblock%}
+{%block body%}
+    <h2>Compare Revisions</h2>
+    <dl>
+      <dt>From</dt><dd><a href='{%url wiki-page wiki.pslug name%}?rev={{fromRev.id}}'>
+	    {{fromRev.date|date}} by {{fromRev.author.username}}</a>: <i>{{fromRev.comment}}</i></dd>
+      <dt>To</dt><dd><a href='{%url wiki-page wiki.pslug name%}?rev={{toRev.id}}'>
+	    {{toRev.date|date}} by {{toRev.author.username}}</a>: <i>{{toRev.comment}}</i></dd>
+    </dl>
+
+    <h3>Differences</h3>
+    {{diff|safe}}
+{%endblock%}

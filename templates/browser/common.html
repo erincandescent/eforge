@@ -1,0 +1,34 @@
+<div class='tools rcol ui-tabs ui-widget ui-widget-content ui-corner-all'>
+    <b>Viewing revision {{ncommit.id|slice:":10"}}</b><br /><br />
+    <b>Parents</b>
+    <ul class='revisions'>
+    {% for parent in ncommit.parents %}
+        <li><a href='{% url browse-revision project.slug parent.id %}'>{{parent.short_id}}</a></li>
+    {% empty %}
+        <li><span>None (Initial commit)</span></li>
+    {% endfor %}
+    </ul>
+    <b>Children</b>
+    <ul class='revisions'>
+    {% for child in ncommit.children %}
+        <li><a href='{% url browse-revision project.slug child.id %}'>{{child.short_id}}</a></li>
+    {% empty %}
+        <li><span>None (Head)</span></li>
+    {% endfor %}
+    </ul>
+    <hr />
+    <b>Branches</b>
+    <ul class='branches'>
+        {% for branch, rev in repo.branches.items %}
+            <li><a href='{% url browse-revision project.slug rev.id %}'>{{branch}}</a></li>
+        {% endfor %}
+    </ul>
+    <b>Tags</b>
+    <ul class='revisions'>
+        {% for tag, rev in repo.tags.items %}
+            <li><a href='{% url browse-revision project.slug rev.id %}'>{{tag}}</a></li>
+        {% empty %}
+            <li>None</li>
+        {% endfor %}
+    </ul>
+</div>

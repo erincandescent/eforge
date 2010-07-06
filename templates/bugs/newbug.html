@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} New bug - {{project.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/issues/showbug.css'>
+<script type='text/javascript' src='/static/issues/showbug.js'></script>
+{% endblock %}
+{% block content %}
+<div class='mbar'>New bug</div>
+<div class='content'>
+    <form method='POST' enctype="multipart/form-data" action="{% url bug-new project.slug %}" name='bug'>
+        <table class='form'>
+        {% with bug_form as form     %}{% include "bugs/form_frag.html" %}{% endwith %}
+        {% with comment_form as form %}{% include "bugs/form_frag.html" %}{% endwith %}
+        {% for form in attach_forms.forms %}{% include "bugs/form_frag.html" %}{% endfor %}
+        </table>
+        {{attach_forms.management_form}}
+        <input type='submit' value='Submit' />
+    </form>
+</div>
+{% endblock %}

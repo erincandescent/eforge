@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} {{project.name}} - Issue {{bug.slug}}: {{bug.title}} {% endblock %}
+{% block headinsert %}
+<script type='text/javascript' src='/static/issues/showbug.js'></script>
+<link rel='stylesheet' type='text/css' href='/static/issues/showbug.css'>
+{% if edit_form %}
+<script type='text/javascript'>$(function() { $('#bug-tabs').tabs('select', 'bug-update'); });</script>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class='mbar'>Issue {{bug.slug}}: {{bug.title}}</div>
+<div class='content'>
+<dl>
+    <dt>Component</dt>  <dd>{{bug.component}}</dd>
+    <dt>Type</dt>       <dd>{{bug.issue_type_name}}</dd>
+    <dt>Priority</dt>   <dd>{{bug.priority_name}}</dd>
+    <dt>Status</dt>     <dd>{{bug.status_name}}</dd>
+{% if bug.is_resolved %}
+    <dt>Resolution</dt> <dd>{{bug.resolution_name}}</dd>
+{% endif %}
+    <dt>Submitter</dt>  <dd>{{bug.submitter}}</dd>
+    <dt>Assign to</dt>  <dd>{{bug.owner}}</dd>
+    <dt>Depends on</dt> <dd>
+        {% for dependency in bug.depends.all %}
+            <a href='{{dependency.url}}'>{{dependency.slug}}</a>{% if not forloop.last %},{% endif %}
+        {% empty %}
+            Nothing
+        {% endfor %}
+    </dd>
+    <dt>Blocks</dt> <dd>
+        {% for block in bug.blocks.all %}
+            <a href='{{block.url}}'>{{block.slug}}</a>{% if not forloop.last %},{% endif %}
+        {% empty %}
+            Nothing
+        {% endfor %}
+    </dd>
+    <dt>Watchers</dt><dd>
+        {% for user in bug.watchers.all %}
+            {{user}}{% if not forloop.last %},{% endif %}
+        {% empty %}
+            None
+        {% endfor %}
+    </dd>
+</dl>
+<div id='bug-tabs'>
+<ul>
+    <li><a href="#bug-comments"><span>Comments</span></a></li>
+    <li><a href="#bug-attachments"><span>Attachments</span></a></li>
+    <li><a href="#bug-update"><span>Update</span></a></li>
+</ul>
+
+
+<div id='bug-comments'>
+<h3>Comments</h3>
+{% for comment in bug.comment_set.all %}
+<div class='bug-comment'>
+    <div class='bug-comment-head'>
+        <div class='bug-avatar'><img src='{{comment.submitter|gravatar:32}}' alt='' /></div>
+        Submitted by <i>{{comment.submitter}}</i> at <i>{{comment.date|date}}</i>
+        <div class='bug-comment-links'><a name='c{{comment.id}}' href='#c{{comment.id}}'>[permalink]</a></div>
+    </div>
+    <div class='bug-comment-body'>{{comment.text}}</div>
+    {% if comment.action_set.all %}
+        <h4>Actions</h4>
+        <ul>
+        {% for action in comment.action_set.all %}
+            <li>{{action}}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% if comment.attachment_set.all %}
+        <h4>Attachments</h4>
+        <ul>
+        {% for attachment in comment.attachment_set.all %}
+            <li><a href='{{attachment.url}}'>{{attachment.file_name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif%}
+</div>
+{% empty %}
+    <i>This issue does not have any comments</i>
+{% endfor %}
+</div>
+
+<div id='bug-attachments'>
+<h3>Attachments</h3>
+{% if bug.attachment_set.all %}
+    <ul>
+    {% for attachment in bug.attachment_set.all %}
+        <li><a href='{{attachment.url}}'>{{attachment.file_name}}</a> <a href='#c{{attachment.comment_id}}' class='bug-clink'>[Associated comment]</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <i>This issue does not have any attachments</i>
+{% endif %}
+</div>
+
+<div id='bug-update'>
+<h3>Update</h3>
+{% if user.is_active %}
+<form method='POST' enctype="multipart/form-data" action="{% url bug-show project.slug bug.id %}" name='bug'>
+<table class='form'>
+{% with bug_form as form     %}{% include "bugs/form_frag.html" %}{% endwith %}
+{% with comment_form as form %}{% include "bugs/form_frag.html" %}{% endwith %}
+{% for form in attach_forms.forms %}{% include "bugs/form_frag.html" %}{% endfor %}
+</table>
+{{attach_forms.management_form}}
+<input type='submit' value='Submit' />
+</form>
+{% else %}
+    <a href='/auth/login'>You must be logged in to update bugs</a>
+{% endif %}
+</div>
+</div>
+
+<br />
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "TCWiki/page.html" %}
+{%block header%}Edit - {{title}}{%endblock%}
+{%block body%}
+    {%if oldrev%}
+	<div class='warning'>
+	    You are editing an old revision of this page. This revision was created on
+	    {{revision.date|date}} by {{revision.author.username}}. <strong>Saving your changes will
+	    revert all modifications since then.</strong> If it is not your intention to revert
+	    this page to an older version, <strong><a href='{%url wiki-page wiki.pslug name%}?a=edit'>edit
+	    the current revision of this page</a></strong>
+	</div>
+    {%endif%}
+    {%if preview%}
+	<h2>Preview</h2>
+	<div class='info'>{{preview|safe}}</div>
+    {%endif%}
+
+    <h2>Edit</h2>
+    The contents of this Wiki are maintained using the Creole markup language. For information
+    on it, see <a href='http://www.wikicreole.org/'>the Creole site</a>.<br/>
+    <form action="{%url wiki-page wiki.pslug name%}" method="POST">
+	<textarea name='content' cols='80' rows='20'>{{markup}}</textarea><br /><br />
+	Comment: <input type='text' name='comment' maxlength='140'/><br /><br />
+	<input type='submit' name='a' value='Save' />
+	<input type='submit' name='a' value='Preview' />
+    </form>
+{%endblock%}

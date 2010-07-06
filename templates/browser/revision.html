@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} Revision {{rev.short_id}} - {{project.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/browser/browser.css' />
+{% endblock %}
+{% block content %}
+<div class='mbar'>Revision {{rev.short_id}}</div>
+<div class='content'>
+<div id='revhead'>
+    <img src='{{rev.author_email|gravatar:32}}' alt='' style=''/>
+    {% if rev.author_user %}
+        <b>{{rev.author_user.username}}</b>
+    {% else %}
+        <b>{{rev.author_name}}</b>
+    {% endif %}<br />
+    {% if user.is_active %}
+        <a href='mailto:{{rev.author_email}}'>{{rev.author_email}}</a>
+    {% else %}
+        <i>E-Mail not displayed (You are not logged in)</i>
+    {% endif %}
+</div>
+
+<a href='{% url browse-rootdir project.slug rev.id %}'>Browse</a>
+
+<h3>Message</h3>
+<pre>{{rev.message}}</pre>
+
+<h3>Parents</h3>
+<ul class='revisions'>
+{% for parent in rev.parents %}
+    <li><span><a href='{% url browse-revision project.slug parent.id %}'>{{parent.short_id}}</a> ({{parent.short_message}})</span></li>
+{% empty %}
+    <li><span>None (Initial commit)</span></li>
+{% endfor %}
+</ul>
+
+<h3>Children</h3>
+<ul class='revisions'>
+{% for child in rev.children %}
+    <li><span><a href='{% url browse-revision project.slug child.id %}'>{{child.short_id}}</a> ({{child.short_message}})</span></li>
+{% empty %}
+    <li><span>None (Head)</span></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %} About EForge {% endblock %}
+{% block content %}
+
+<div class='mbar'>About EForge</div>
+<div class='content'>
+    <img src='/static/EForge96.png' alt='' style='float: right' />
+    <p>
+        <a href='http://eforge.e43.eu/p/eforge/'>EForge</a> version {{eforgever}},
+        copyright &copy; <a href='http://e43.eu/'>Element43</a> and contributors.
+    </p>
+    <p>
+        Running on Django {{djangover}} and Python {{pyver}}.
+    </p>
+
+    <h2>Plugins</h2>
+    <ul>
+        {% for p in plugins %}
+        <li>
+            <b>{{p.name|safe}}</b><br/>
+            {{p.credit|safe}}<br/><br/>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

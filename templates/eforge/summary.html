@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %} Summary - {{project.name}} {% endblock %}
+{% block content %}
+
+<div class='mbar'>{{project.name}} Summary</div>
+<div class='content'>
+<div class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <table>
+        <tr><th>Name:</th>        <td>{{project.name}}</td></tr>
+        <tr><th>Description:</th> <td>{{project.description}}</td></tr>
+        <tr><th>Members:</th><td><ul>
+            {% for member in project.members.all %}
+                <li><a href='{{member.page}}'>{{member}}</a></li>
+            {% endfor %}
+        </ul></td></tr>
+    </table>
+</div>
+</div>
+
+{% endblock %}

@@ -17,7 +17,7 @@ def about(request):
     import django
     import eforge
 
-    return render_to_response('about.html', {
+    return render_to_response('eforge/about.html', {
         'plugins':      plugins.plugins,
         'eforgever':    eforge.get_version(),
         'djangover':    django.get_version(),

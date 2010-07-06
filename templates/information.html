@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %} EForge - Information {% endblock %}
+{% block content %}
+
+<div class='mbar'>Information</div>
+<div class='content'>
+  <p>
+    {% block text %}{{text}}{% block %}
+  </p>
+
+</div>
+
+{% endblock %}
+
+{# Is this template actually used any more? #}

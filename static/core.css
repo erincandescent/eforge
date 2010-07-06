@@ -1,0 +1,150 @@
+body {
+  background-color: #fff;
+  color: #000;
+  font-family: DejaVu Sans, Bitstream Vera Sans, Helvetica, Arial, Sans-Serif;
+  height: 100%;
+  text-align: center;
+  margin: 0;
+  font-size: 12px;
+}
+
+.highlight div { padding: 12px; }
+#message-dismiss { float: right; padding-right: 5px; }
+
+a { text-decoration: none; }
+
+img {
+  border: 0;
+}
+
+#logo {
+    width: 100%;
+    height: 100px;
+    background: #fcb645 url('/static/jQuery/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png') center top;
+    text-align: center;
+    vertical-align:middle;
+}
+
+#topbar {
+    width: 990px;
+    padding: 5px;
+    margin: 0 auto;
+    height: 48px;
+    text-align: left;
+}
+
+#toplogo {
+    position: absolute;
+    top: 0;
+    padding-top: 6px;
+}
+
+#toplogo h1 {
+    display: inline;
+    font-size: 24px;
+}
+
+#topmenu {
+    float: left;
+    width: 100%;
+}
+
+#userinfo {
+    float: right;
+    text-align: right;
+}
+
+#topavatar {
+    float: right;
+    padding-left: 5px;
+}
+
+#wrapper {
+  width: 990px;
+  height: 100%;
+  margin: 0 auto;
+  text-align: left;
+  background-color: #fff;
+  padding: 5px;
+}
+
+#logo h1  { position: absolute; left: -1000px; }
+#logo img { margin-top: 2px; }
+
+.mbar {
+  margin-top: 2px;
+  min-height: 20px;
+  border-top: 1px solid #e78f08;
+  background: #fcb645 url('/static/jQuery/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png') center center;
+  padding: 7px 0 5px 6px;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  clear: both;
+}
+
+.content {
+  padding: 5px;
+  padding-bottom: 10px;
+  position: relative;
+  float: left;
+  clear: both;
+  width: 100%;
+}
+
+#menu { 
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 5px;
+  font-size: 16px;
+  text-align: left;
+  font-weight: bold;
+}
+
+a        { color: #1c94c4; }
+a:hover  { color: #c77405; }
+a:active { color: #eb8f00; }
+h1 a     { color: #000; }
+
+a.create { color: #c4541c; }
+
+.form { width: 100%; }
+
+input {
+  font-size: 20px;
+  background-color: #ddd;
+  margin-bottom: 2px;
+}
+
+input[type="text"], input[type="password"] {
+  width: 100%;
+}
+
+.form th {
+  vertical-align: top;
+  padding-top:   6px;
+  padding-right: 5px;
+  text-align: right;
+}
+
+.form td {
+  padding-bottom: 8px;
+}
+
+.fbox {
+  text-align: right;
+  font-size: 20px;
+}
+
+.fbig {
+  font-size: 20px;
+}
+
+.formhide {
+    display: none;
+}
+
+.sourcetable {
+    width: 100%;
+    height: 100%;
+}

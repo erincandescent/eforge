@@ -1,0 +1,5 @@
+{% extends "TCWiki/page.html" %}
+{%block body%}
+    The page <i>{{title}}</i> doesn't exist. If you have permission to do so,
+    then you may <a href='{%url wiki-page wiki.pslug name%}?a=edit'>create</a> it.
+{%endblock%}

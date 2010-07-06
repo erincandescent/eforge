@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %} {{directory.pretty}} - commit {{commit}} - {{project.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/browser/browser.css' />
+{% endblock %}
+{% block content %}
+<div class='mbar'>{{directory.pretty}}</div>
+<div class='content'>
+<div id='bwrapper'>
+    <div class='mcol'>
+    <table class='file-list' cellspacing='0'>
+        <thead>
+            <tr>
+                <th id='pricol'>Name </th>
+                <th>Size</th>
+        </thead>
+        <tbody>
+            {% for file in directory.children %}
+                <tr>
+                    <td><a
+                            href='{% url browse-path project.slug commit file.path %}'
+                            class='{% if file.is_directory %}dir{% else %}file{% endif %}'
+                        >{{file.name}}</a></td>
+                    <td>{% if file.is_file %}{{file.size|filesizeformat}}{% endif %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% include "browser/common.html" %}
+</div>
+</div>
+
+{% endblock %}

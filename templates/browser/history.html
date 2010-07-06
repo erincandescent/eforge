@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} Revision History - {{project.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/browser/browser.css' />
+{% endblock %}
+{% block content %}
+<div class='mbar'>Revision History ({{start}} to {{next}} of {{total}})</div>
+<div class='content'>
+<ul>
+{% for rev in revisions %}
+  <li>
+    <img src='{{rev.author_email|gravatar:16}}' alt='' />
+    {% if rev.author_user %}
+        {{rev.author_user.username}}
+    {% else %}
+        {{rev.author_name}}
+    {% endif %}
+    <b>committed</b> <a href='{% url browse-revision project.slug rev.id %}'>{{rev.short_id}}</a> <br/>
+    <p style='font-family: monospace; margin-left: 48px;'>
+        {{rev.short_message}}
+    </p>
+  </li>
+{% endfor %}
+</ul>
+
+{% if not is_start %}
+<a class='button' href='?s={{prev}}&amp;n={{num}}'>Previous</a>
+{% endif %}
+{% if not is_end %}
+<a class='button' href='?s={{next}}&amp;n={{num}}'>Next</a>
+{% endif %}
+</div>
+
+{% endblock %}

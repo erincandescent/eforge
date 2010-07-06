@@ -1,0 +1,24 @@
+{% extends "TCWiki/main.html" %}
+{%block title%} {{title}} - Forge@e43 {%endblock%}
+{%block content%}
+    <div class='mbar'>{{title}}</div>
+    <div class='content'>
+        <div style='width: 100%; text-align: right;'>
+        {% if user.is_authenticated %}
+	        <a href='{%url wiki-page wiki.pslug name%}?rev={{revision.id}}'>View</a> | 
+	        <a href='{%url wiki-page wiki.pslug name%}?a=edit&amp;rev={{revision.id}}'>Edit</a> | 
+	        <a href='{%url wiki-page wiki.pslug name%}?a=history'>History</a>
+        {% endif %}
+        </div>
+    {%block body%}
+	{%if oldrev%}
+	    <div class='highlight'><div>
+		You are viewing an old revision of this page. This revision was created on
+		{{revision.date|date}} by {{revision.author.username}}. <strong><a href='{%url wiki-page wiki.pslug name%}'>View
+		the current revision of this page</a></strong>
+	    </div></div>
+	{%endif%}
+	{{content|safe}}
+    {%endblock%}
+    </div>
+{%endblock%}

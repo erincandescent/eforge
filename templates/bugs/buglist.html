@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %} Tracker - {{project.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/issues/buglist.css'>
+<link rel='stylesheet' type='text/css' href='/static/issues/showbug.css'>
+{% endblock %}
+{% block content %}
+
+<div class='mbar'>Bugs</div>
+<div class='content'>
+    <form method='GET'>
+        <ul class='sbar'>
+            {% for field in search.visible_fields %}
+            <li>{{field.label_tag}}:</li>
+            <li>
+                {% if forloop.first %}
+                    {% for hidden in search.hidden_fields %}
+                        {{hidden}}
+                    {% endfor %}
+                {% endif %}
+                {{field}}
+            </li>
+            {% endfor %}
+            <li><input type='submit' value='Search' /></li>
+        </ul>
+    </form>
+    <br />
+    {% if object_list %}
+    <table class='bug-list' cellspacing='0'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th class='mw'>Component</th>
+                <th id='pricol'>Title</th>
+                <th>Submitted</th>
+                <th>Priority</th>
+                <th>Status</th>
+        </thead>
+        <tbody>
+            {% for bug in object_list %}
+                <tr>
+                    <td><a href='{% url bug-show project.slug bug.id %}'>{{bug.slug}}</a></td>
+                    <td>{{bug.issue_type_name}}</td>
+                    <td>{{bug.component}}</td>
+                    <td><a href='{% url bug-show project.slug bug.id %}'>{{bug.title}}</a></td>
+                    <td>{{bug.submitted|date:"Y-m-d"}}</td>
+                    <td>{{bug.priority_name}}</td>
+                    <td>{{bug.status_name}}{% if bug.is_resolved %} {{bug.resolution_name}}{% endif %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No bugs? If only it  were true...</p>
+    {% endif %}
+    <a class='button' href='{%url bug-new project.slug%}'>New</a>
+</div>
+
+{% endblock %}

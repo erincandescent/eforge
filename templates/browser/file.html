@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} File {{file.pretty}} - At {{commit}} - {{project.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/browser/browser.css' />
+<style>
+{{styles}}
+</style>
+{% endblock %}
+{% block content %}
+<div class='mbar'>File {{file.name}}</div>
+<div class='content'>
+    <div id='bwrapper'>
+        <div class='mcol'>
+            {% if file.is_text %}
+                {{highlighted|safe}}
+            {% else %}
+                Binary file, {{file.size|filesizeformat}}
+            {% endif %}
+        </div>
+        {% include "browser/common.html" %}  
+    </div>
+</div>
+
+{% endblock %}

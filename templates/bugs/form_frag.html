@@ -1,0 +1,15 @@
+{% for field in form.visible_fields %}
+    <tr>
+        <th>{{field.label_tag}}:</th>
+        <td>
+            {% if forloop.first %}
+                {% for hidden in form.hidden_fields %}
+                    {{hidden}}
+                {% endfor %}
+            {% endif %}
+            {{field}}
+            {{field.errors}}
+        </td>
+    </tr>
+{% endfor %}
+

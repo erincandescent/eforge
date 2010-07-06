@@ -1,0 +1,76 @@
+{% load eforge_user %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>{% block title %}EForge{% endblock %}</title>
+        <link rel='stylesheet' type='text/css' href='/static/jQuery/css/ui-lightness/jquery-ui-1.8rc3.custom.css'>
+        <link rel='stylesheet' type='text/css' href='/static/core.css'>
+        <script type='text/javascript' src='/static/jQuery/js/jquery-1.4.2.min.js'></script>
+        <script type='text/javascript' src='/static/jQuery/js/jquery-ui-1.8rc3.custom.min.js'></script>
+        <script type='text/javascript' src='/static/core.js'></script>
+        {% block sitehead %}{% endblock %}
+        {% block headinsert %}{% endblock %}
+    </head>
+    <body>
+        <div id='topbar'>
+            <div id='toplogo'>
+                <a href='/'><img src='/static/EForge24.png' alt='EForge' /></a>
+            </div>
+            <div id='userinfo'>
+                {% if user.is_authenticated %}
+                    <div id='topavatar'><img src='{{user|gravatar:32}}' alt='' /></div>
+                    Hello, {{user.username}}.<br />
+                    {% if user.is_staff %}<a href='{% url admin:index %}'>Admin</a>{% endif %}
+                {% else %}
+                    Hello, stranger. <br />
+                    <a href='/auth/login'>Login or create an account</a>
+                {% endif %}
+            </div>
+            <div id='topmenu'>
+                <a href='{% url project-list %}'>Projects</a>
+            </div>
+        </div>
+        <div id='logo'>
+            {% if project %}
+                <a href='{% url project-page project.slug %}'><img src='{{project.logo.url}}' alt='' /><h1>{{project.name}}</h1></a>
+            {% else %}
+                <a href='/'><img src='/static/EForge96.png' alt='' /><h1>EForge</h1></a>
+            {% endif %}
+        </div>
+        <div id='wrapper'>
+            <div id='menu'>{% block menu %}
+            {% if project %}
+                {% for url, item in project.topmenu %}
+                    <a href='{{url}}'>{{item}}</a>
+                    {% if not forloop.last %}|{% endif %}
+                {% endfor %}
+            {% else %}
+                <a href='{% url project-list %}'>Projects</a>
+            {% endif %}
+            {% endblock%}</div>
+
+            {% if messages %}
+                <div id='messages'>
+                    <div class='mbar'>Messages <a href='javascript:void();' id='message-dismiss'><img src='/static/silk/cross.png' alt='Close' /></a></div>
+                    <div class='content'>
+                        {% for message in messages %}
+                            <div class='highlight'><div>{{ message }}</div></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% block content %}
+                <div class='mbar'>Error</div>
+                <div class='content'>
+                    This page is lacking a content block
+                </div>
+            {% endblock %}
+            <div class='mbar'>End</div>
+            <div class='content' style='text-align: right'>
+                Powered by <a href='/eforge/about'>EForge</a> and <a href='http://www.djangoproject.org'>Django</a>. Icons famfamfam Silk.
+            </div>
+        </div>
+    </body>
+</html>

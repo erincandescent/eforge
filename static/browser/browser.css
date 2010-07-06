@@ -1,0 +1,78 @@
+#pricol {
+    width: 100%;
+}
+
+.file-list th {
+    min-width: 75px;
+}
+
+tr, td {
+    height: 20px;
+}
+
+.file, .dir {
+    display: block;
+    padding-left: 21px;
+    height: 16px;
+}
+
+.file {
+    background: url('/static/silk/page.png') no-repeat;
+
+}
+
+.dir {
+    background: url('/static/silk/folder.png') no-repeat;
+}
+
+.tools {
+    float: right;
+    padding: 5px;
+}
+
+#bwrapper {
+    float: left;
+    width: 100%;
+    position: relative;
+}
+
+.mcol, .rcol {
+    float:left;
+	position:relative;
+	overflow:hidden;
+}
+
+.mcol {
+    width: 768px;
+}
+
+.rcol {
+    width: 200px;
+}
+
+.branches, .revisions {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.branches li > a, .revisions li > a, .branches li > span, .revisions li > span {
+    display: block;
+    padding-left: 21px;
+    height: 16px;
+}
+
+.branches  li > a, .branches  li > span  { background: url('/static/silk/arrow_branch.png') no-repeat; }
+.revisions li > a, .revisions li > span { background: url('/static/silk/arrow_right.png') no-repeat;  }
+
+#revhead {
+    height: 32px;
+    border-bottom: 1px solid #DDD;
+    margin: 5px;
+    padding-bottom: 2px;
+}
+
+#revhead img {
+    float: left;
+    margin-right: 5px
+}

@@ -1,0 +1,15 @@
+.sbar {
+    margin: auto 0;
+}
+
+.sbar li {
+    display:table-cell;
+    list-style-type: none;
+    padding-right: 15px;
+    vertical-align: middle;
+}
+
+.sbar select {
+    height: 100px;
+    width: 125px;
+}

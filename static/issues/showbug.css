@@ -1,0 +1,63 @@
+.bug-comment {
+    border: 1px solid #bbb;
+    background-color: #eee;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.bug-comment-body {
+    padding: 3px;
+    font-family: Monospace;
+
+    /* Standard way to do this */
+    white-space: pre-wrap;
+    /* Backwards compatibility...*/
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    /* Old IE oddball */
+    word-wrap: break-word;
+}
+
+.bug-comment-head {
+    border-bottom: 1px solid #bbb;
+    background-color: #ddd;
+    width: 100%-3px;
+    padding: 3px 0 3px 3px;
+}
+
+.bug-comment-links {
+    float: right;
+    padding-right: 3px;
+}
+.bug-avatar {
+    float: left;
+    padding-right: 3px;
+}
+
+.bug-list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bug-list thead tr {
+    background:  #fcb645 url('/static/jQuery/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png') center center;
+}
+
+.bug-list thead th {
+    min-width: 75px;
+    border: 1px solid #e78f08;
+    padding: 5px;
+}
+
+.bug-list tbody td {
+    border: 1px solid #e78f08;
+}
+
+.mw {
+    min-width: 150px;
+}
+
+#pricol {
+    width: 100%;
+}
