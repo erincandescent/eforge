@@ -13,6 +13,13 @@ def summary(request, proj_slug):
     }, context_instance=RequestContext(request))
 
 def about(request):
+    import platform
+    import django
+    import eforge
+
     return render_to_response('about.html', {
-        'plugins': plugins.plugins
+        'plugins':      plugins.plugins,
+        'eforgever':    eforge.get_version(),
+        'djangover':    django.get_version(),
+        'pyver':        platform.python_version(),
     }, context_instance=RequestContext(request))
