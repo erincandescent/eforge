@@ -238,7 +238,9 @@ class IFile(IGenericFile):
         A file within the repository.
 
         In addition to the methods documented here, this should be implemented
-        as a file-like object.
+        as a file-like object. Before any of the file methods can be called,
+        the "open" method must be invoked to permit lazy loading and
+        initialization.
 
         Finally, the "data" property should be a string of the contents of the
         file
@@ -291,6 +293,7 @@ class IFile(IGenericFile):
     def __file_type(self):
         # Guess the type of a file
 
+        self.open()
         pos = self.tell()
         self.seek(0)
         dat = self.read(1024)
@@ -317,3 +320,13 @@ class IFile(IGenericFile):
 
         self.seek(pos)
         self.__analysed = True
+
+    def open(self):
+        """
+            Opens the file for reading. This must be invoked before using any
+            of the file methods, in order to permit plugins to do lazy
+            initialization.
+
+            There must be no side effects if open is called a multiple times.
+        """
+        pass

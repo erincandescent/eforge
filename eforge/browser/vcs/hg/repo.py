@@ -176,9 +176,9 @@ class HgFile(IFile, StringIO.StringIO):
         self.repo = repo
         self.rev  = rev
         self.file = rev.rev[path]
+        self.__initialized = False
 
     def __lazyinit(self):
-        self.file = rev.rev[path]
         self.__data = self.file.data()
         StringIO.StringIO.__init__(self, self.__data)
         self.__size = len(self.__data)
@@ -195,4 +195,8 @@ class HgFile(IFile, StringIO.StringIO):
         if not self.__initialized:
             self.__lazyinit()
         return self.__size
+
+    def open(self):
+        if not self.__initialized:
+            self.__lazyinit()
 

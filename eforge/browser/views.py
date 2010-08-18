@@ -105,12 +105,13 @@ def file(request, proj_slug, commit = None, path = ''):
         styles = ''
         if obj.is_text:
             try:
-                lexer = guess_lexer_for_filename(obj.name, obj.data)
+                lexer = guess_lexer_for_filename(obj.name, obj.data,
+                                                 encoding=obj.text_encoding)
             except:
-                lexer = TextLexer()
+                lexer = TextLexer(encoding=obj.text_encoding)
             formatter   = HtmlFormatter(linenos=True, cssclass='source')
             highlighted = highlight(obj.data, lexer, formatter)
-            styles    = formatter.get_style_defs()
+            styles      = formatter.get_style_defs()
 
         return render_to_response('browser/file.html', {
             'project':     project,
