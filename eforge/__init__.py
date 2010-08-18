@@ -25,7 +25,7 @@ EFORGE_PLUGIN = {
     },
 }
 
-VERSION = (0, 5, 0)
+VERSION = (0, 5, 0, 'beta 1')
 
 def get_version():
-    return '%d.%d.%d' % VERSION
+    return '%d.%d.%d %s' % VERSION
