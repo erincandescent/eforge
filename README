@@ -1,0 +1,39 @@
+EForge is a Django application, and must be deployed as such. As a large piece
+of software, it has a number of dependencies; full information on the
+requirements can be found on the project wiki:
+    http://eforge.e43.eu/p/eforge/wiki/Requirements
+
+The wiki also contains installation instructions:
+    http://eforge.e43.eu/p/eforge/wiki/Installation
+
+
+Directory tree information:
+
+|
+|- eforge       EForge source code root (Python module) & core components
+|  \
+|  |- browser   Source browser plugin
+|  |  \
+|  |  |- vcs    VCS plugins root
+|  |  |  \
+|  |  |  |- git Git repository browser
+|  |  |  |- hg  Mercurial repository browser
+|  |  |  |- ...
+|  |- bugs      Issue tracker plugin
+|  |- utils     Utility functions
+|  |- wiki      Wiki plugin
+|
+|- templates    EForge templates root & EForge overall template
+|  \
+|  |- TCWiki    Templates for TCWiki (backend of the Wiki plugin)
+|  |- bugs      Templates for the issue tracker plugin
+|  |- browser   Templates for the source browser plugin
+|  |- eforge    Templates for eforge core components pages (e.g. about)
+|
+|- static       Static files relating to overall look and feel
+|  \
+|  |- browser   Browser theme files
+|  |- images    jQueryUi images
+|  |- issues    Issue tracker images (inconsistency: rename to bugs)
+|  |- jQuery    jQuery & jQueryUi and themes
+|  |- silk      famfamfam silk icons
