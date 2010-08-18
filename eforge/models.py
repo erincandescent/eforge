@@ -28,3 +28,14 @@ class Project(models.Model):
                             key=itemgetter(1))
         except Exception, e:
             print e
+
+class Milestone(models.Model):
+    project     = models.ForeignKey(Project)
+    previous    = models.OneToOneField('Milestone', related_name='next', blank=True, null=True)
+    name        = models.CharField(max_length=32)
+    description = models.TextField()
+    due_date    = models.DateTimeField()
+    completed   = models.BooleanField()
+
+    def __unicode__(self):
+        return self.name

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from eforge.models import Project
+from eforge.models import Project, Milestone
 from eforge.utils.picklefield import PickledObjectField
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -49,6 +49,8 @@ class Bug(models.Model):
     priority   = models.SmallIntegerField(choices=IssuePriority, default=4)
     issue_type = models.SmallIntegerField(choices=IssueType, default=1)
     title      = models.CharField(max_length=50)
+
+    target     = models.ForeignKey(Milestone)
 
     status     = models.SmallIntegerField(choices=IssueStatus, default=1)
     resolution = models.SmallIntegerField(choices=IssueResolution, default=0, blank=True)
@@ -130,6 +132,11 @@ def component_renderer(old, to):
     cto   = Component.objects.get(pk=to)
     return 'Changed Component from %s to %s' % (cold, cto)
 
+def target_renderer(old, to):
+    mold = Milestone.objects.get(pk=old)
+    mto  = Milestone.objects.get(pk=to)
+    return 'Changed Milestone from %s to %s' % (mold, mto)
+
 def priority_renderer(old, to):
     pold = IssuePriority[old-1][1]
     pto   = IssuePriority[to-1][1]
@@ -202,6 +209,7 @@ action_renderer = {
     'resolution':       resolution_renderer,
     'owner':            owner_renderer,
     'depends':          depends_renderer,
+    'target':           target_renderer,
 }
 
 class Action(models.Model):
@@ -212,7 +220,6 @@ class Action(models.Model):
 
     @classmethod
     def for_change(self, bug, comment, field, oldv, newv):
-        print 'for_change %s %s %s %s %s' % (bug, comment, field, oldv, newv)
         changed = False
         valstr  = str(newv)
         if isinstance(oldv, models.Model): oldv = oldv.pk

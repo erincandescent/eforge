@@ -8,7 +8,7 @@ from django.views.generic.list_detail import object_list
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django import forms
-from eforge.models import Project
+from eforge.models import Project, Milestone
 from models import *
 
 class BugForm(forms.ModelForm):
@@ -21,6 +21,7 @@ class BugForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(BugForm, self).__init__(*args, **kwargs)
         self.fields['component'].queryset = Component.objects.filter(project=self.instance.project)
+        self.fields['target'].queryset = Milestone.objects.filter(project=self.instance.project)
 
     def clean(self):
         try:
@@ -138,6 +139,7 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.project = proj
         self.fields['component'].queryset=Component.objects.filter(project=self.project)
+        self.fields['milestone'].queryset=Milestone.objects.filter(project=self.project)
 
     def clean(self):
         for f in self.fields:
@@ -152,7 +154,7 @@ class SearchForm(forms.Form):
     priority   = forms.MultipleChoiceField(choices=IssuePriority, required=False)
     status     = forms.MultipleChoiceField(choices=IssueStatus, required=False)
     component  = forms.ModelMultipleChoiceField(queryset=Component.objects, required=False)
-
+    milestone  = forms.ModelMultipleChoiceField(queryset=Milestone.objects, required=False)
 
 def listbugs(request, proj_slug):
     project = get_object_or_404(Project, slug=proj_slug)
@@ -163,7 +165,8 @@ def listbugs(request, proj_slug):
             issue_type__in=search_form.cleaned_data['issue_type'],
               priority__in=search_form.cleaned_data['priority'],
                 status__in=search_form.cleaned_data['status'],
-             component__in=search_form.cleaned_data['component']
+             component__in=search_form.cleaned_data['component'],
+                target__in=search_form.cleaned_data['milestone'],
         ).all()
     else:
         query = project.bug_set.all()
