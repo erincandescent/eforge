@@ -22,8 +22,8 @@ from django.http import HttpResponse, Http404
 from pygments.lexers import guess_lexer_for_filename, TextLexer
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
-
 from eforge.models import Project
+from eforge.utils.text import textscan
 from eforge import plugins
 
 def plugin_for(path):
@@ -133,4 +133,5 @@ def revision(request, proj_slug, commit):
             'repo':        repo,
             'commit':      commit,
             'rev':         ncommit,
+            'description': textscan(project, ncommit.message),
     }, context_instance=RequestContext(request))

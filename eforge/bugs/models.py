@@ -17,6 +17,7 @@
 from django.db import models
 from eforge.models import Project, Milestone
 from eforge.utils.picklefield import PickledObjectField
+from eforge.utils.text import textscan
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -125,6 +126,10 @@ class Comment(models.Model):
     submitter  = models.ForeignKey(User)
     date       = models.DateTimeField(auto_now_add=True)
     text       = models.TextField()
+
+    @property
+    def formatted(self):
+        return textscan(self.bug.project, self.text)
 
 def up_file(this, name):
     return 'bugfiles/%d-%d/%s' % (this.bug_id, this.comment_id, name)

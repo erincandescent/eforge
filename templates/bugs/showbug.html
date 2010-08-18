@@ -61,7 +61,7 @@
         Submitted by <i>{{comment.submitter}}</i> at <i>{{comment.date|date}}</i>
         <div class='bug-comment-links'><a name='c{{comment.id}}' href='#c{{comment.id}}'>[permalink]</a></div>
     </div>
-    <div class='bug-comment-body'>{{comment.text}}</div>
+    <div class='bug-comment-body'>{{comment.formatted}}</div>
     {% if comment.action_set.all %}
         <h4>Actions</h4>
         <ul>
