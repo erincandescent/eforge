@@ -17,6 +17,7 @@
 import dulwich
 import StringIO
 from eforge.browser.interface import *
+from eforge.browser.vcs.git.models import RevisionRelation
 
 class GitRepository(IRepository):
     def __init__(self, path):
@@ -65,6 +66,12 @@ class GitRevision(IRevision):
         else:
             self.rev = rev
 
+        if not RevisionRelation.objects.filter(child=self.id).count():
+            # No cache built, we should make one
+            for revision in self.parents:
+                rel = RevisionRelation(child=self.id, parent=revision.id)
+                rel.save()
+
     @property
     def id(self):
         return self.rev.id
@@ -98,7 +105,8 @@ class GitRevision(IRevision):
 
     @property
     def children(self):
-        return []
+        return [GitRevision(self.repo, x.child) for x in
+            RevisionRelation.objects.filter(parent=self.id).all()]
 
     @property
     def root(self):
