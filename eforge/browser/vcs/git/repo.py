@@ -31,7 +31,6 @@ class GitRepository(IRepository):
     def head(self):
         return GitRevision(self, self.repo.head())
 
-    @property
     def revisions(self, num):
         revs = []
 
