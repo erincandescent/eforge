@@ -5,12 +5,14 @@ from mercurial.node import short
 from mercurial.ui import ui
 from mercurial.localrepo import localrepository
 from mercurial.util import shortuser, email
+from subprocess import Popen, PIPE
 from binascii import unhexlify
 
 class HgRepository(IRepository):
     def __init__(self, path):
         self.ui   = ui()
         self.repo = localrepository(self.ui, path)
+        self.path = path
 
     @property
     def branches(self):
@@ -36,9 +38,30 @@ class HgRepository(IRepository):
     def head(self):
         return HgRevision(self, self.repo.changelog.tip())
 
-    @property
-    def revisions(self):
-        return [HgRevision(self, x) for x in self.repo.revision_history()]
+    def revisions(self, num):
+        revs = []
+
+        log = self.repo.changelog
+        seen = set()
+        heads = log.heads()
+        edges = []
+
+        while heads:
+            hgrev = HgRevision(self, heads.pop())
+            seen.add(hgrev.id)
+            edges.append(hgrev)
+
+        while edges and len(revs) < num:
+            rev = edges.pop()
+            revs.append(rev)
+
+            for p in rev.parents:
+                if not p.id in seen:
+                    edges.append(p)
+                    seen.add(p.id)
+
+        return revs
+
 
 class HgRevision(IRevision):
     def __init__(self, repo, rev):
@@ -64,6 +87,10 @@ class HgRevision(IRevision):
     @property
     def author_name(self):
         return shortuser(self.rev.user())
+
+    @property
+    def message(self):
+        return self.rev.description()
 
     @property
     def parents(self):
@@ -99,7 +126,7 @@ class HgRevision(IRevision):
             par._children[name] = obj
             return obj
 
-        for k, node in mf.items():
+        for k in mf.keys():
             dir = ''
             name = k
             obj = dirs['']
@@ -107,7 +134,7 @@ class HgRevision(IRevision):
                 dir, name = k.rsplit('/', 1)
                 obj = rec_add(dir)
 
-            obj._children[name] = HgFile(self.repo, self, obj, name, k, node)
+            obj._children[name] = HgFile(self.repo, self, obj, name, k)
 
         return dirs['']
 
@@ -115,7 +142,7 @@ class HgRevision(IRevision):
 class HgDirectory(IDirectory):
     def __init__(self, repo, rev, parent, name):
         IDirectory.__init__(self, parent, name)
-        print "md %s" % self.path
+        #print "md %s" % self.path
         self.repo      = repo
         self.rev       = rev
         self._children = {}
@@ -128,20 +155,29 @@ class HgDirectory(IDirectory):
         return self._children[name]
 
 class HgFile(IFile, StringIO.StringIO):
-    def __init__(self, repo, rev, parent, name, path, node):
+    def __init__(self, repo, rev, parent, name, path):
         IFile.__init__(self, parent, name)
-        print "mf %s" % self.path
+        #print "mf %s" % self.path
         self.repo = repo
         self.rev  = rev
-        self.node = node
         self.file = rev.rev[path]
 
-        self.data = self.file.data()
+    def __lazyinit(self):
+        self.file = rev.rev[path]
+        self.__data = self.file.data()
+        StringIO.StringIO.__init__(self, self.__data)
+        self.__size = len(self.__data)
+        self.__initialized = True
 
-        StringIO.StringIO.__init__(self, self.data)
-        self.__size = len(self.data)
+    @property
+    def data(self):
+        if not self.__initialized:
+            self.__lazyinit()
+        return self.__data
 
     @property
     def size(self):
+        if not self.__initialized:
+            self.__lazyinit()
         return self.__size
 

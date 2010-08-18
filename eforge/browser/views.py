@@ -34,7 +34,6 @@ def descend_tree(repo, tree, path):
 def history(request, proj_slug):
     project = get_object_or_404(Project, slug=proj_slug)
     repo = plugin_for(project.repo_path)
-    revisions = repo.revisions
 
     start = 0
     num   = 50
@@ -42,8 +41,10 @@ def history(request, proj_slug):
         start = int(request.GET['s'])
     if 'n' in request.GET:
         num = int(request.GET['n'])
+    end = start + num
 
-    end = min(start + num, len(revisions))
+    revisions = repo.revisions(end + 1)
+    end = min(end, len(revisions))
     prev = max(0, start - num)
 
     return render_to_response('browser/history.html', {
@@ -56,7 +57,6 @@ def history(request, proj_slug):
         'next':      end,
         'num':       num,
         'prev':      prev,
-        'total':     len(revisions),
     }, context_instance=RequestContext(request))
 
 def file(request, proj_slug, commit = None, path = ''):

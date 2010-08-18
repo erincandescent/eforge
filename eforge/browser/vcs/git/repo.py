@@ -32,12 +32,12 @@ class GitRepository(IRepository):
         return GitRevision(self, self.repo.head())
 
     @property
-    def revisions(self):
+    def revisions(self, num):
         revs = []
 
         walk = self.repo.get_graph_walker()
         ob = walk.next()
-        while ob:
+        while ob and len(revs) < num:
             revs.append(GitRevision(self, ob))
             ob = walk.next()
 

@@ -60,10 +60,10 @@ class IRepository(object):
         pass
 
     @property
-    def revisions(self):
+    def revisions(self, num):
         """
-            Returns a list of all revisions in the repository. The order is
-            unspecified.
+            Returns a list of the latest \p num revisions in the repository. The
+            order is reverse chronological.
 
             Because revision lists can grow quite large, it is recommended that
             implementations use a custom iterator to avoid loading the whole
