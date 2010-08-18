@@ -12,7 +12,7 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-from django.utils.html import escape
+from django.utils.html import conditional_escape
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 import re
@@ -86,7 +86,7 @@ def textscan(project, instr):
     etc.
     '''
     # HTML encode the text
-    instr = escape(instr)
+    instr = conditional_escape(instr)
 
     # Output line buffer list
     # (Pushing onto a list and joining at the end is faster, and doesn't really
@@ -113,5 +113,4 @@ def textscan(project, instr):
 
     print linebuf
     rv = mark_safe('<br />'.join(linebuf))
-    print "!!%s!!" % rv
     return rv
