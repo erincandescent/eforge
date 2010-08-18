@@ -34,6 +34,7 @@
                 <th class='mw'>Component</th>
                 <th id='pricol'>Title</th>
                 <th>Submitted</th>
+                <th>Target</th>
                 <th>Priority</th>
                 <th>Status</th>
         </thead>
@@ -45,6 +46,7 @@
                     <td>{{bug.component}}</td>
                     <td><a href='{% url bug-show project.slug bug.id %}'>{{bug.title}}</a></td>
                     <td>{{bug.submitted|date:"Y-m-d"}}</td>
+                    <td>{{bug.target}}</td>
                     <td>{{bug.priority_name}}</td>
                     <td>{{bug.status_name}}{% if bug.is_resolved %} {{bug.resolution_name}}{% endif %}</td>
                 </tr>
