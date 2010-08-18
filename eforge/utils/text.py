@@ -32,9 +32,9 @@ import re
 # about HTML injection in that regard.
 #
 
-bold      = re.compile(r'\*\*(.*?)\*\*')
-italic    = re.compile(r'//(.*?)//')
-underline = re.compile(r'__(.*?)__')
+bold      = re.compile(r'(\*\*.*?\*\*)')
+italic    = re.compile(r'(//.*?//)')
+underline = re.compile(r'(__.*?__)')
 buglink   = re.compile(r'[#][\w]+-[\d]+')
 wikilink  = re.compile(r'\[\[[\w ]+\]\]')
 freelink  = re.compile(r'[\w]+://[\w?&;./=+]+')
