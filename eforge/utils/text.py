@@ -111,6 +111,5 @@ def textscan(project, instr):
 
         linebuf.append(line)
 
-    print linebuf
     rv = mark_safe('<br />'.join(linebuf))
     return rv
