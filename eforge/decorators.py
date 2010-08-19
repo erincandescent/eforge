@@ -14,18 +14,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from eforge.models import Project
 from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
-from eforge.decorators import project_page
-from TCWiki import views as WViews
 
-@project_page
-def wiki_page(request, project, name='Main_page'):
-    wiki_info = {
-        'pageloc': (lambda page: reverse('wiki-page', args=[proj_slug, page])),
-        'wiki_id': project.id,
-        'pslug':   project.slug,
-        'project': project,
-        'context': {'project': project},
-    }
-    return WViews.page(request, name, wiki_info=wiki_info)
+def project_page(view):
+    def wrapper(request, proj_slug, *args, **kwargs):
+        project = get_object_or_404(Project, slug=proj_slug)
+        return view(request, project, *args, **kwargs)
+    return wrapper

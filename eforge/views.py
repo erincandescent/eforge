@@ -17,12 +17,13 @@
 # Create your views here.
 from eforge import plugins
 from eforge.models import Project
+from eforge.decorators import project_page
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponse
 from django.template import RequestContext
 
-def summary(request, proj_slug):
-    project = get_object_or_404(Project, slug=proj_slug)
+@project_page
+def summary(request, project):
     return render_to_response('eforge/summary.html', {
         'project': project
     }, context_instance=RequestContext(request))

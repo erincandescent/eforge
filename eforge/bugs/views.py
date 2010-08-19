@@ -23,6 +23,7 @@ from django.views.generic.list_detail import object_list
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django import forms
+from eforge.decorators import project_page
 from eforge.models import Project, Milestone
 from models import *
 
@@ -71,8 +72,8 @@ class CommentForm(forms.ModelForm):
 
 AttachmentFormSet = forms.models.modelformset_factory(Attachment, extra=3, exclude=('bug', 'comment', 'file_name'))
 
-def showbug(request, proj_slug, bug_id):
-    project = get_object_or_404(Project, slug=proj_slug)
+@project_page
+def showbug(request, project, bug_id):
     bug     = get_object_or_404(Bug, project=project, id=bug_id)
     user    = request.user
     if user.is_active:
@@ -96,7 +97,7 @@ def showbug(request, proj_slug, bug_id):
                 attachment.comment = comment
                 attachment.save()
             user.message_set.create(message='Bug successfully updated')
-            return redirect(reverse('bug-show', args = [proj_slug, bug_id]))
+            return redirect(reverse('bug-show', args = [project.slug, bug_id]))
         edit_form = True
     else:
         bug_form     = BugForm(instance=bug, prefix='bug')
@@ -114,8 +115,8 @@ def showbug(request, proj_slug, bug_id):
     }, context_instance=RequestContext(request))
 
 @login_required
-def newbug(request, proj_slug):
-    project = get_object_or_404(Project, slug=proj_slug)
+@project_page
+def newbug(request, project):
     user    = request.user
     bug     = Bug(project=project, submitter=user)
     comment = Comment(bug=bug, submitter=user)
@@ -136,7 +137,7 @@ def newbug(request, proj_slug):
                 attachment.comment = comment
                 attachment.save()
             user.message_set.create(message='Bug created')
-            return redirect(reverse('bug-show', args = [proj_slug, bug.id]))
+            return redirect(reverse('bug-show', args = [project.slug, bug.id]))
     else:
         bug_form     = BugForm(prefix='bug', instance=bug)
         comment_form = CommentForm(prefix='comment', instance=comment)
@@ -171,9 +172,8 @@ class SearchForm(forms.Form):
     component  = forms.ModelMultipleChoiceField(queryset=Component.objects, required=False)
     milestone  = forms.ModelMultipleChoiceField(queryset=Milestone.objects, required=False)
 
-def listbugs(request, proj_slug):
-    project = get_object_or_404(Project, slug=proj_slug)
-
+@project_page
+def listbugs(request, project):
     search_form = SearchForm(project, request.GET)
     if search_form.is_valid():
         query = project.bug_set.filter(
@@ -201,8 +201,9 @@ def listbugs(request, proj_slug):
         }
     )
 
-def attachment(request, proj_slug, attach_id):
-    attachment = get_object_or_404(Attachment, bug__project__slug__iexact=proj_slug, id=attach_id)
+@project_page
+def attachment(request, project, attach_id):
+    attachment = get_object_or_404(Attachment, bug__project=project, id=attach_id)
     path = attachment.file.path
     resp = HttpResponse(
         open(path, 'r'),

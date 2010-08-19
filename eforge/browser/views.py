@@ -23,6 +23,7 @@ from pygments.lexers import guess_lexer_for_filename, TextLexer
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from eforge.models import Project
+from eforge.decorators import project_page
 from eforge.utils.text import textscan
 from eforge import plugins
 
@@ -46,8 +47,8 @@ def descend_tree(repo, tree, path):
     #except:
     #    raise Http404
 
-def history(request, proj_slug):
-    project = get_object_or_404(Project, slug=proj_slug)
+@project_page
+def history(request, project):
     repo = plugin_for(project.repo_path)
 
     start = 0
@@ -74,12 +75,9 @@ def history(request, proj_slug):
         'prev':      prev,
     }, context_instance=RequestContext(request))
 
-def file(request, proj_slug, commit = None, path = ''):
-    project = get_object_or_404(Project, slug=proj_slug)
-    #try:
+@project_page
+def file(request, project, commit = None, path = ''):
     repo = plugin_for(project.repo_path)
-    #except:
-    #    raise Http404
 
     if commit is None:
         ncommit = repo.head
@@ -123,8 +121,8 @@ def file(request, proj_slug, commit = None, path = ''):
             'highlighted': highlighted,
         }, context_instance=RequestContext(request))
 
-def revision(request, proj_slug, commit):
-    project = get_object_or_404(Project, slug=proj_slug)
+@project_page
+def revision(request, project, commit):
     repo = plugin_for(project.repo_path)
 
     ncommit = repo.revision(commit)
