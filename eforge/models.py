@@ -15,7 +15,7 @@
 #
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.db import models
 import plugins
 from operator import itemgetter
@@ -25,12 +25,13 @@ def logo_path(proj, name):
 
 # Create your models here.
 class Project(models.Model):
-    slug        = models.SlugField(max_length=16, unique=True)
-    name        = models.CharField(max_length=32, unique=True)
-    repo_path   = models.CharField(max_length=64)
-    description = models.TextField()
-    logo        = models.ImageField(upload_to=logo_path)
-    members     = models.ManyToManyField(User)
+    slug          = models.SlugField(max_length=16, unique=True)
+    name          = models.CharField(max_length=32, unique=True)
+    repo_path     = models.CharField(max_length=64)
+    description   = models.TextField()
+    logo          = models.ImageField(upload_to=logo_path)
+    members       = models.ManyToManyField(User,  related_name="projects")
+    member_groups = models.ManyToManyField(Group, related_name="projects")
 
     def __unicode__(self):
         return self.name
@@ -54,3 +55,48 @@ class Milestone(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class UserPermission(models.Model):
+    user       = models.ForeignKey(User, null=True)
+    project    = models.ForeignKey(Project)
+    permission = models.ForeignKey(Permission)
+
+class GroupPermission(models.Model):
+    group      = models.ForeignKey(Group)
+    project    = models.ForeignKey(Project)
+    permission = models.ForeignKey(Permission)
+
+"""
+    anon = user.is_anonymous()
+    for backend in auth.get_backends():
+        if not anon or backend.supports_anonymous_user:
+            if hasattr(backend, "has_perm"):
+                if obj is not None:
+                    if (backend.supports_object_permissions and
+                    backend.has_perm(user, perm, obj)):
+                        return True
+                        else:
+                            if backend.has_perm(user, perm):
+                                return True
+                                return False
+"""
+
+def _group_has_project_perm(group, project, perm):
+    if project.grouppermission_set.filter(group=group, permission=perm).count():
+        return True
+    return False
+
+def user_has_project_perm(user, project, perm):
+    if user.has_perm(perm):
+        return True
+
+    if project.userpermission_set.filter(user=user, permission=perm).count():
+        return True
+
+    for group in user.groups.all():
+        if _group_has_project_perm(group, project, perm):
+            return True
+
+    return False
+
+User.has_project_perm = user_has_project_perm
