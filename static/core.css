@@ -92,7 +92,7 @@ img {
   width: 100%;
 }
 
-#menu { 
+#menu {
   width: 100%;
   margin-bottom: 5px;
   padding: 5px;
@@ -118,6 +118,15 @@ input {
 
 input[type="text"], input[type="password"] {
   width: 100%;
+}
+
+select[multiple="multiple"] {
+  width: 150px;
+  height: 100px;
+}
+
+textarea {
+    width: 100%;
 }
 
 .form th {
