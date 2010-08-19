@@ -197,11 +197,11 @@ def autojoin(l, format):
     s = format(l[0])
     rem = l[1:]
     for o in rem:
-        s += ', ' + format(o)
+        s += u', ' + format(o)
     return s
 
 def get_dep(id):
-    return Bug.objects.get(pk=id)
+    return Bug.objects.get(pk=id).slug
 
 def depends_renderer(old, to):
     sold = set(old)
