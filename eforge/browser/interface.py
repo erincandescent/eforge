@@ -150,9 +150,12 @@ class IRevision(object):
     def short_message(self):
         """ Short message """
         try:
-            return self.message.split('.', 1)[0].strip()
+            msg = self.message.split('. ', 1)[0].strip()
         except:
-            return self.message
+            msg = self.message
+        if len(msg) > 100:
+            msg = msg[0:100].rsplit(' ', 1)[0].strip() + '...'
+        return msg
 
     @property
     def parents(self):
