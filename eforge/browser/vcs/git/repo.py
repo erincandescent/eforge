@@ -28,8 +28,17 @@ class GitRepository(IRepository):
         refs = {}
         for ref in grefs.keys():
             if ref.startswith(prefix):
-                refs[ref[len(prefix):]] = GitRevision(self, self.repo.refs.follow(ref))
-
+                ## Ugly ugly ugly! Gotta be a better way!
+                gref = self.repo[self.repo.refs[ref]]
+                if isinstance(gref, dulwich.objects.Tag):
+                    obj = gref.object
+                else:
+                    obj = gref
+                if isinstance(obj, tuple):
+                    # What the? Why are these in
+                    #  (type, str(sha)) form?! What?!
+                    obj = self.repo[obj[1]]
+                refs[ref[len(prefix):]] = GitRevision(self, obj)
         return refs
 
     @property
