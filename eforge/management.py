@@ -20,7 +20,7 @@ from eforge.models import Project
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.models import User, Group
-
+from eforge import plugins
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -44,21 +44,28 @@ def project(request, project):
         'updated':      updated,
     }, context_instance=RequestContext(request))
 
+
+
 def members(request, project):
     if 'a' in request.GET:
         act = request.GET['a']
         group = None
         user  = None
+        obj   = None
 
         if act == 'g':
             group = Group.objects.get(pk=request.GET['g'])
+            obj   = group
         else:
             user = User.objects.get(pk=request.GET['u'])
+            obj  = user
 
         return render_to_response('eforge/manage_member.html', {
             'project':      project,
             'user':         user,
             'group':        group,
+            'obj':          obj,
+            'perms':        plugins.provider['perms'],
         }, context_instance=RequestContext(request))
     else:
         return render_to_response('eforge/manage_members.html', {

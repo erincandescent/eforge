@@ -16,6 +16,7 @@
 
 from eforge.menu import ItemOrder
 from eforge.management import project, members
+from eforge.models import Project
 
 EFORGE_PLUGIN = {
     'name':     'EForge Core',
@@ -24,12 +25,18 @@ EFORGE_PLUGIN = {
     'provides': {
         'mnu': (
             ('project-page',       ItemOrder(000, 'Summary')),
-            ('project-management', ItemOrder(999, 'Manage'))
+            ('project-management', ItemOrder(999, 'Manage')),
         ),
 
         'managepg': (
             ('project', { 'name': 'Project', 'view': project }),
             ('members', { 'name': 'Members', 'view': members }),
+        ),
+
+        'perms': (
+            ('eforge', { 'title': 'Project', 'perms': {
+                'manage': 'Can manage the project',
+            }}),
         ),
     },
 }

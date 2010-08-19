@@ -22,7 +22,23 @@ EFORGE_PLUGIN = {
     'credit':   'Copyright &copy; 2010 Element43 and contributors',
 
     'provides': {
-        'app': [('tracker', urls.patterns)],
-        'mnu': [('bug-list', ItemOrder(200, 'Tracker'))],
+        'app': (
+            ('tracker', urls.patterns),
+        ),
+
+        'mnu': (
+            ('bug-list', ItemOrder(200, 'Tracker')),
+        ),
+
+        'perms': (
+            ('bugs', { 'title': 'Tracker', 'perms': {
+                'add_bug':      'Create new issues',
+                'bug_comment':  'Comment on issues',
+                'change_bug':   'Change the issue information',
+                'delete_bug':   'Delete issues',
+            }}),
+        ),
     },
+
+
 }

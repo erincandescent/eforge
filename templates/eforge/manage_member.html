@@ -3,3 +3,21 @@
 {% else %}
     {{group.name}}
 {% endif %}
+
+{% if user %}
+<form method='POST' action='?pg=members&amp;a=u&amp;u={{user.pk}}'>
+{% else %}
+<form method='POST' action='?pg=members&amp;a=g&amp;g={{group.pk}}'>
+{% endif %}
+<table>
+{% for prefix, group in perms.items %}
+    <tr><th colspan='2'>{{group.title}}</th></tr>
+    {% for perm, label in group.perms.items %}
+        <tr>
+            <td><input type="checkbox" name="{{prefix}}.{{perm}}" id="{{prefix}}.{{perm}}"/></td>
+            <td><label for="{{prefix}}.{{perm}}">{{label}}</label></td>
+        </tr>
+    {% endfor %}
+{% endfor %}
+</table>
+</form>

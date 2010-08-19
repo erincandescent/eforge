@@ -86,7 +86,10 @@ class GroupPermission(models.Model):
                                 return False
 """
 
-def _group_has_project_perm(group, project, perm):
+def group_has_project_perm(group, project, perm):
+    if group.has_perm(perm):
+        return True
+
     if project.grouppermission_set.filter(group=group, permission=perm).count():
         return True
     return False
@@ -99,9 +102,10 @@ def user_has_project_perm(user, project, perm):
         return True
 
     for group in user.groups.all():
-        if _group_has_project_perm(group, project, perm):
+        if group_has_project_perm(group, project, perm):
             return True
 
     return False
 
 User.has_project_perm = user_has_project_perm
+Group.has_project_perm = group_has_project_perm
