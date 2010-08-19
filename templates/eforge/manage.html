@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %} EForge - {{project.name}} Management {% endblock %}
+{% block headinsert %}
+    <script type='text/javascript' src='/static/eforge/manage.js'></script>
+{% endblock %}
+{% block content %}
+
+<div class='mbar'>Management</div>
+<div class='content'>
+    <div id='manage-tabs'>
+        <ul>
+            {% for id, tab in tabs %}
+            <li><a href="?pg={{id}}"><span>{{tab.name}}</span></a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

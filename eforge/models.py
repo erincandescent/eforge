@@ -30,8 +30,8 @@ class Project(models.Model):
     repo_path     = models.CharField(max_length=64)
     description   = models.TextField()
     logo          = models.ImageField(upload_to=logo_path)
-    members       = models.ManyToManyField(User,  related_name="projects")
-    member_groups = models.ManyToManyField(Group, related_name="projects")
+    members       = models.ManyToManyField(User,  related_name="projects", null=True, blank=True)
+    member_groups = models.ManyToManyField(Group, related_name="projects", null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -44,6 +44,11 @@ class Project(models.Model):
                             key=itemgetter(1))
         except Exception, e:
             print e
+
+    class Meta:
+        permissions = (
+            ('manage', 'Can manage the project'),
+        )
 
 class Milestone(models.Model):
     project     = models.ForeignKey(Project)

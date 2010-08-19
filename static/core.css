@@ -157,3 +157,18 @@ textarea {
     width: 100%;
     height: 100%;
 }
+
+ul.icons {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+li.user > a, li.group > a {
+    display: block;
+    padding-left: 21px;
+    height: 16px;
+}
+
+li.group > a { background: url('/static/silk/group.png') no-repeat; }
+li.user  > a { background: url('/static/silk/user.png')  no-repeat; }

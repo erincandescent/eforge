@@ -14,5 +14,29 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-plugins   = []
-provider = {}
+from django.conf import settings
+import sys
+from plugins import *
+
+for app in settings.INSTALLED_APPS:
+    __import__(app)
+    mod = sys.modules[app]
+
+    if 'EFORGE_PLUGIN' in dir(mod):
+        print ">> plugin %s" % app
+        plugin = mod.EFORGE_PLUGIN
+        plugin['module'] = app
+
+        plugins.append(plugin)
+
+for plugin in plugins:
+    if 'provides' not in plugin:
+        continue
+
+    for ifc in plugin['provides']:
+        objs = plugin['provides'][ifc]
+
+        if ifc in provider:
+            provider[ifc].update(dict(objs))
+        else:
+            provider[ifc] = dict(objs)

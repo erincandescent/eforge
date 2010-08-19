@@ -27,6 +27,7 @@ project_list_info = {
 
 projpatterns = patterns('eforge.views',
     url(r'^$',                            'summary', name='project-page'),
+    url(r'^manage/$',                     'manage',  name='project-management'),
 )
 
 for k in plugins.provider['app']:

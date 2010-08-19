@@ -15,13 +15,22 @@
 #
 
 from eforge.menu import ItemOrder
+from eforge.management import project, members
 
 EFORGE_PLUGIN = {
     'name':     'EForge Core',
     'credit':   'Copyright &copy; 2010 Element43 and contributors',
 
     'provides': {
-        'mnu': [('project-page', ItemOrder(000, 'Summary'))],
+        'mnu': (
+            ('project-page',       ItemOrder(000, 'Summary')),
+            ('project-management', ItemOrder(999, 'Manage'))
+        ),
+
+        'managepg': (
+            ('project', { 'name': 'Project', 'view': project }),
+            ('members', { 'name': 'Members', 'view': members }),
+        ),
     },
 }
 
@@ -29,3 +38,5 @@ VERSION = (0, 5, 99, '(git master)')
 
 def get_version():
     return '%d.%d.%d %s' % VERSION
+
+import eforge.pluginloader
