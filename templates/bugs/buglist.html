@@ -9,20 +9,21 @@
 <div class='mbar'>Bugs</div>
 <div class='content'>
     <form method='GET'>
-        <ul class='sbar'>
-            {% for field in search.visible_fields %}
-            <li>{{field.label_tag}}:</li>
-            <li>
-                {% if forloop.first %}
-                    {% for hidden in search.hidden_fields %}
-                        {{hidden}}
-                    {% endfor %}
-                {% endif %}
-                {{field}}
-            </li>
-            {% endfor %}
-            <li><input type='submit' value='Search' /></li>
-        </ul>
+        {% for hidden in search.hidden_fields %}
+            {{hidden}}
+        {% endfor %}
+        <table>
+            <tr>
+                {% for field in search.visible_fields %}
+                    <td>{{field.label_tag}}:</li>
+                {% endfor %}
+            </tr><tr>
+                {% for field in search.visible_fields %}
+                    <td>{{field}}</td>
+                {% endfor %}
+                <td><input type='submit' value='Search' /></td>
+            </tr>
+        </table>
     </form>
     <br />
     {% if object_list %}
