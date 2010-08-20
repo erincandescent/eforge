@@ -1,0 +1,28 @@
+
+{% for project in projects %}
+    {% if forloop.first %}
+        <ul>
+    {% endif %}
+        <li>
+            <b><a href='{% url project-page project.slug %}'>{{project.name}}</a></b><br />
+            {{project.description}}<br />
+
+            {% if project.children.all %}
+                {% with "eforge/project_list_level.html" as filename %}
+                {% with project.children.all as projects %}
+                    {% include filename %}
+                {% endwith %}
+                {% endwith %}
+            {% endif %}
+        </li>
+    {% if forloop.last %}
+        </ul>
+    {% endif %}
+{% endfor %}
+{#
+    The "with" line above is used to force runtime, not compile time,
+    inclusion. This is because Django would otherwise try to resolve the
+    include during the compile... which won't work - maximum recursion depth =)
+
+    Its kind of a hack. Perhaps theres a better way.
+#}

@@ -4,14 +4,9 @@
 
 <div class='mbar'>Projects</div>
 <div class='content'>
-    <ul>
-        {% for project in object_list %}
-            <li>
-                <b><a href='{% url project-page project.slug %}'>{{project.name}}</a></b><br />
-                {{project.description}}<br />
-            </li>
-        {% endfor %}
-    </ul>
+{% with object_list as projects %}
+    {% include "eforge/project_list_level.html" %}
+{% endwith %}
 </div>
 
 {% endblock %}

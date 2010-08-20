@@ -22,7 +22,7 @@ import plugins
 
 project_list_info = {
     'template_name': 'eforge/project_list.html',
-    'queryset': models.Project.objects.all(),
+    'queryset': models.Project.objects.filter(parent=None).all(),
 }
 
 projpatterns = patterns('eforge.views',

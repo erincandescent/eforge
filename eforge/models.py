@@ -30,9 +30,9 @@ class Project(models.Model):
     repo_path     = models.CharField(max_length=64)
     description   = models.TextField()
     logo          = models.ImageField(upload_to=logo_path)
-    members       = models.ManyToManyField(User,  related_name="projects", null=True, blank=True)
-    member_groups = models.ManyToManyField(Group, related_name="projects", null=True, blank=True)
-
+    members       = models.ManyToManyField(User,  related_name='projects', null=True, blank=True)
+    member_groups = models.ManyToManyField(Group, related_name='projects', null=True, blank=True)
+    parent        = models.ForeignKey('Project',  related_name='children', null=True, blank=True)
     def __unicode__(self):
         return self.name
 
