@@ -1,4 +1,3 @@
-
 {% for project in projects %}
     {% if forloop.first %}
         <ul>
@@ -19,10 +18,10 @@
         </ul>
     {% endif %}
 {% endfor %}
-{#
+{% comment %}
     The "with" line above is used to force runtime, not compile time,
     inclusion. This is because Django would otherwise try to resolve the
     include during the compile... which won't work - maximum recursion depth =)
 
     Its kind of a hack. Perhaps theres a better way.
-#}
+{% endcomment %}
