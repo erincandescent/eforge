@@ -17,7 +17,7 @@
 # Create your views here.
 from eforge import plugins
 from eforge.models import Project
-from eforge.decorators import project_page, has_project_perm
+from eforge.decorators import project_page, has_project_perm, user_page, group_page
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -45,6 +45,17 @@ def manage(request, project):
             raise Http404()
         return tabs[pg]['view'](request, project)
 
+@user_page
+def user(request, user):
+    return render_to_response('eforge/user.html', {
+        'pguser': user,
+    })
+
+@group_page
+def group(request, group):
+    return render_to_response('eforge/group.html', {
+        'group': group,
+    })
 
 def about(request):
     import platform

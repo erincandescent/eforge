@@ -30,13 +30,31 @@ projpatterns = patterns('eforge.views',
     url(r'^manage/$',                     'manage',  name='project-management'),
 )
 
-for k in plugins.provider['app']:
-    projpatterns += patterns('',
-        url('^%s/' % k, include(plugins.provider['app'][k]))
-    )
+if 'app' in plugins.provider:
+    for k in plugins.provider['app']:
+        projpatterns += patterns('',
+            url('^%s/' % k, include(plugins.provider['app'][k]))
+        )
+
+userpatterns = patterns('eforge.views',
+    url(r'^$', 'user', name='user-page'),
+)
+
+if 'userapp' in plugins.provider:
+    for k in plugins.provider['userapp']:
+        userpatterns += patterns('',
+            url('^%s/' % k, include(plugins.provider['userapp'][k]))
+        )
+
+grouppatterns = patterns('eforge.views',
+    url(r'^$', 'group', name='group-page'),
+)
 
 urlpatterns = patterns('',
     url(r'^p/(?P<proj_slug>\w+)/' , include(projpatterns)),
+    url(r'^u/(?P<username>\w+)/' ,  include(userpatterns)),
+    url(r'^g/(?P<groupname>\w+)/' , include(grouppatterns)),
+
     url(r'^p/$', list_detail.object_list, project_list_info, name='project-list'),
     url(r'^eforge/about$', 'eforge.views.about', name='about-eforge')
 )

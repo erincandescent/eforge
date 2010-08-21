@@ -17,7 +17,7 @@
 from eforge.models import Project
 from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.decorators import available_attrs
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from functools import wraps
@@ -26,6 +26,18 @@ def project_page(view):
     def wrapper(request, proj_slug, *args, **kwargs):
         project = get_object_or_404(Project, slug=proj_slug)
         return view(request, project, *args, **kwargs)
+    return wrapper
+
+def user_page(view):
+    def wrapper(request, username, *args, **kwargs):
+        user = get_object_or_404(User, username=username)
+        return view(request, user, *args, **kwargs)
+    return wrapper
+
+def group_page(view):
+    def wrapper(request, groupname, *args, **kwargs):
+        group = get_object_or_404(Group, name=groupname)
+        return view(request, group, *args, **kwargs)
     return wrapper
 
 def _proj_user_passes_test(test_func, login_url=None,

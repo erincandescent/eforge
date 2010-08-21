@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} EForge - User {{pguser.username}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/eforge/user.css' />
+{% endblock %}
+{% block content %}
+
+<div class='mbar'>{{pguser.username}}</div>
+<div class='content'>
+<div id='userhead'>
+    <img src='{{pguser|gravatar:80}}' alt='' style=''/>
+    <h1>{{pguser.username}}</h1>
+    <h3>{{pguser.first_name}} {{pguser.last_name}}</h3>
+    <p>Last active: {{pguser.last_login|date}}</p>
+</div>
+{% for project in pguser.projects.all %}
+{% if forloop.first %}
+<b>Projects:</b>
+<ul>
+{% endif %}
+    <li><a href='{% url project-page project.slug %}'>{{project}}</a></li>
+{% if forloop.last %}
+</ul>
+{% endif %}
+{% endfor %}
+
+{% for group in pguser.groups.all %}
+{% if forloop.first %}
+<b>Groups:</b>
+<ul>
+{% endif %}
+    <li><a href='{% url group-page group %}'>{{group}}</a></li>
+{% if forloop.last %}
+</ul>
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}

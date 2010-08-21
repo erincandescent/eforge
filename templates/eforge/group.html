@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} EForge - Group {{group.name}} {% endblock %}
+{% block headinsert %}
+<link rel='stylesheet' type='text/css' href='/static/eforge/user.css' />
+{% endblock %}
+{% block content %}
+
+<div class='mbar'>{{group.name}}</div>
+<div class='content'>
+{% for project in group.projects.all %}
+{% if forloop.first %}
+<b>Projects:</b>
+<ul>
+{% endif %}
+    <li><a href='{% url project-page project.slug %}'>{{project}}</a></li>
+{% if forloop.last %}
+</ul>
+{% endif %}
+{% endfor %}
+
+{% for user in group.user_set.all %}
+{% if forloop.first %}
+<b>Members:</b>
+<ul>
+{% endif %}
+    <li><a href='{% url user-page user %}'>{{user}}</a></li>
+{% if forloop.last %}
+</ul>
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}

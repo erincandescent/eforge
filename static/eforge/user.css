@@ -1,0 +1,11 @@
+#userhead {
+    height: 80px;
+    border-bottom: 1px solid #DDD;
+    margin: 5px;
+    padding-bottom: 2px;
+}
+
+#userhead img {
+    float: left;
+    margin-right: 5px
+}
