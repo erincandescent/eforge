@@ -58,11 +58,14 @@ class GitRepository(IRepository):
 
     def revisions(self, num):
         revs = []
+        seen = set()
 
         walk = self.repo.get_graph_walker()
         ob = walk.next()
         while ob and len(revs) < num:
-            revs.append(GitRevision(self, ob))
+            if not ob in seen:
+                seen.add(ob)
+                revs.append(GitRevision(self, ob))
             ob = walk.next()
 
         return revs
