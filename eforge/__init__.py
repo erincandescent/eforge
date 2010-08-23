@@ -17,6 +17,7 @@
 from eforge.menu import ItemOrder
 from eforge.management import project, members
 from eforge.models import Project
+import eforge.queue
 
 EFORGE_PLUGIN = {
     'name':     'EForge Core',
