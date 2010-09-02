@@ -43,8 +43,8 @@ class BoundTask(object):
         self.conn = task.get_publisher()
 
     def __call__(self, *args, **kwargs):
-        return Future(self.task.apply_async(args=*args, kwargs=**kwargs,
-                                                        publisher=self.conn))
+        return Future(self.task.apply_async(args=args, kwargs=kwargs, 
+        									publisher=self.conn))
 
 class Task(ctask.Task):
     def __init__(self, fn, **kwargs):
@@ -52,9 +52,9 @@ class Task(ctask.Task):
         self.fn = fn
 
     def run(self, *args, **kwargs):
-        return self.fn(*args, **kwargs))
+        return self.fn(*args, **kwargs)
 
-    def bind(self, **kwargs)
+    def bind(self, **kwargs):
         return BoundTask(self)
 
     def __call__(self, *args, **kwargs):
