@@ -23,7 +23,8 @@ setup(
         "PIL>=1.1.7",
         "dulwich>=0.6.1",
         "TCWiki>=0.1.0",
-	"Pygments>=1.3.1",
+        "Pygments>=1.3.1",
+        "chardet"
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
