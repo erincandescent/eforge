@@ -288,11 +288,6 @@ class IFile(IGenericFile):
             self.__file_type()
         return self.__text_encoding
 
-
-    @property
-    def _default_encoding(self):
-        return 'UTF8'
-
     def __file_type(self):
         # Guess the type of a file
 
@@ -319,7 +314,7 @@ class IFile(IGenericFile):
         else:
             # Text of some unknown form
             self.__is_binary     = False
-            self.__text_encoding = self._default_encoding
+            self.__text_encoding = None # Anything we put here would be a guess
 
         self.seek(pos)
         self.__analysed = True

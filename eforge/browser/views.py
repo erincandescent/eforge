@@ -104,9 +104,9 @@ def file(request, project, commit = None, path = ''):
         if obj.is_text:
             try:
                 lexer = guess_lexer_for_filename(obj.name, obj.data,
-                                                 encoding=obj.text_encoding)
+                       		encoding=obj.text_encoding or 'chardet')
             except:
-                lexer = TextLexer(encoding=obj.text_encoding)
+                lexer = TextLexer(encoding=obj.text_encoding or 'chardet')
             formatter   = HtmlFormatter(linenos=True, cssclass='source')
             highlighted = highlight(obj.data, lexer, formatter)
             styles      = formatter.get_style_defs()
