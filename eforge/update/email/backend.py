@@ -17,10 +17,10 @@
 from django.contrib.auth.models import User
 from eforge.update.models import Update
 from django.conf import settings
+from django.core.mail import send_mail
 
 from_email = getattr(settings, 'EMAIL_FROM', '')
 
 def send(update):
-    print "EMailing %s" % instance.id
     send_mail(update.summary, update.description, from_email, 
               [u.email for u in update.recipients])

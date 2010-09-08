@@ -27,15 +27,14 @@ from eforge import plugins
 
 def distribute(sender, instance, created, **kwargs):
     if not created:
-        print "Ignoring resave of %s" % instance.id
         return # not new
         
-    print "Distributing %s" % instance.id
-    for plugin in plugins.provider['notify'].items():
+    for name, plugin in plugins.provider['notify'].items():
         _send_via(plugin, instance.pk)
     
 @task()
 def _send_via(sendfn, upd_id):
+
     sendfn(Update.objects.get(pk=upd_id))
 
 post_save.connect(distribute, sender=Update)
