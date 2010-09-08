@@ -18,6 +18,7 @@ from django.db import models
 from eforge.models import Project, Milestone
 from eforge.utils.picklefield import PickledObjectField
 from eforge.utils.text import textscan
+from eforge.update.models import Update, register_update_type
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -130,6 +131,36 @@ class Comment(models.Model):
     @property
     def formatted(self):
         return textscan(self.bug.project, self.text)
+        
+    class Update:
+        @classmethod
+        def user(self, comment):
+            return comment.submitter
+        
+        @classmethod
+        def project(self, comment):
+            return comment.bug.project
+            
+        @classmethod
+        def summary(self, comment):
+            return 'Comment on bug %s' % comment.bug.slug
+        
+        @classmethod
+        def description(self, comment):
+            return 'User %s said:\n\n%s' % (comment.submitter, comment.text)
+            
+        @classmethod
+        def url(self, comment):
+            return '%s#c%d' % (comment.bug.url, comment.pk)
+        
+        @classmethod
+        def date(self, comment):
+            return comment.date
+
+        @classmethod            
+        def recipients(self, comment):
+            return comment.bug.watchers.all() 
+register_update_type(Comment)
 
 def up_file(this, name):
     return 'bugfiles/%d-%d/%s' % (this.bug_id, this.comment_id, name)
