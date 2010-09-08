@@ -70,7 +70,7 @@ class Update(models.Model):
 
     user        = models.ForeignKey(User, null=True)
     project     = models.ForeignKey(Project, null=True)
-    date       = models.DateTimeField(auto_now_add=True)
+    date       = models.DateTimeField()
 
     object_type = models.ForeignKey(ContentType)
     object_id   = models.PositiveIntegerField()
