@@ -122,8 +122,11 @@ def _proxy_property(name, default=None):
     default = default or required_property
 
     def the_property(self):
-        model = ContentType.objects.get_for_model(self.object_type)
-        return getattr(model.Update, name, default)(self.object)
+        try:
+            model = self.object_type.model_class()
+            return getattr(model.Update, name, default)(self.object)
+        except Exception, e:
+            print e
 
     setattr(Update, name, property(the_property))
     
