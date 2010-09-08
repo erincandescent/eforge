@@ -13,3 +13,20 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
+
+from django.core.management.base import BaseCommand, CommandError
+from eforge.models import Project
+from eforge.vcs.sync import sync_project
+
+class Command(BaseCommand):
+    args = '<project_slug project_slug ...>'
+    help = 'Synchronizes the specified project repositories with the database'
+
+    def handle(self, *args, **options):
+        for proj_slug in args:
+            try:
+                project = Project.objects.get(slug=proj_slug)
+            except Project.DoesNotExist:
+                raise CommandError('Project "%s" does not exist' % proj_slug)
+
+            sync_project(project)

@@ -16,8 +16,9 @@
 
 import dulwich
 import StringIO
+from datetime import datetime
 from eforge.browser.interface import *
-from eforge.browser.vcs.git.models import RevisionRelation
+from eforge.vcs.git.models import RevisionRelation
 
 class GitRepository(IRepository):
     def __init__(self, path):
@@ -123,6 +124,10 @@ class GitRevision(IRevision):
     @property
     def root(self):
         return GitDirectory(self.repo, self.repo.repo[self.rev.tree], None, None)
+        
+    @property
+    def date(self):
+        return datetime.utcfromtimestamp(self.rev.commit_time)
 
 class GitDirectory(IDirectory):
     def __init__(self, repo, tree, parent, name):

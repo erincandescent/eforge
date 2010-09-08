@@ -177,6 +177,13 @@ class IRevision(object):
             The root directory of this revision
         """
         pass
+        
+    @property
+    def date(self):
+        """
+            When the revision was committed as a datetime object
+        """
+        pass
 
 class IGenericFile(object):
     """
