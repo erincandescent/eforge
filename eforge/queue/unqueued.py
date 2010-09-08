@@ -18,21 +18,27 @@
 # synchronously; it is not a suitable backend for production deployments.
 
 class Future(object):
-    __slots__ = ('ex', 'obj')
+    __slots__ = ('ex', 'obj', 'retrieved')
 
     def __init__(self, ex, obj):
         self.ex  = ex
         self.obj = obj
+        self.retrieved = False
 
     @property
     def ready(self):
         return True
 
     def value(self):
+        self.retrieved = True
         if self.ex:
             raise self.ex
         else:
             return self.obj
+            
+    def __del__(self):
+        if not self.retrieved and self.ex:
+            print "Future with exception: %s" % self.ex
 
 class Task(object):
     def __init__(self, fn, **kwargs):
@@ -42,6 +48,7 @@ class Task(object):
         return self
 
     def __call__(self, *args, **kwargs):
+        print "Invoke task"
         try:
             return Future(None, self.fn(*args, **kwargs))
         except Exception, e:
@@ -51,5 +58,6 @@ class Task(object):
 
 def task(**kwargs):
     def builder(fn):
+        print "Build fn"
         return Task(fn, **kwargs)
     return builder
