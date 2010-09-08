@@ -27,8 +27,10 @@ from eforge import plugins
 
 def distribute(sender, instance, created, **kwargs):
     if not created:
+        print "Ignoring resave of %s" % instance.id
         return # not new
         
+    print "Distributing %s" % instance.id
     for plugin in plugins.provider['notify'].items():
         _send_via(plugin, instance.pk)
     

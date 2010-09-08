@@ -8,7 +8,7 @@
 <ul>
 {% for update in update_list %}
 <li>
-    <b><img src='{{update.user|gravatar:16}}' alt='' />{{update.user}}:</b> <a href='{{update.url}}'>{{update.summary}}</a>
+    <b><img src='{{update.user|gravatar:16}}' alt='' />{{update.user}}:</b> <a href='{{update.url}}'>{{update.summary}}</a> {{update.date}}
 </li>
 {% endfor %}
 </ul>

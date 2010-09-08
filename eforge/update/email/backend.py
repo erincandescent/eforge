@@ -21,5 +21,6 @@ from django.conf import settings
 from_email = getattr(settings, 'EMAIL_FROM', '')
 
 def send(update):
+    print "EMailing %s" % instance.id
     send_mail(update.summary, update.description, from_email, 
               [u.email for u in update.recipients])

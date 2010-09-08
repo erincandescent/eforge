@@ -23,7 +23,7 @@ from eforge.update.models import Update
 def list(request, project):
     return list_detail.object_list(
         request,
-        queryset = Update.objects.all().filter(project=project).order_by('-date'),
+        queryset = Update.objects.filter(project=project).order_by('-date'),
         template_name = "update/list.html",
         template_object_name = "update",
         extra_context = {"project" : project},
