@@ -117,11 +117,6 @@ class GitRevision(IRevision):
         return [GitRevision(self.repo, x) for x in self.rev.parents]
 
     @property
-    def children(self):
-        return [GitRevision(self.repo, x.child) for x in
-            RevisionRelation.objects.filter(parent=self.id).all()]
-
-    @property
     def root(self):
         return GitDirectory(self.repo, self.repo.repo[self.rev.tree], None, None)
         

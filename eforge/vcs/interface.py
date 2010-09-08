@@ -165,13 +165,6 @@ class IRevision(object):
         pass
 
     @property
-    def children(self):
-        """
-            Returns a list of the revisions that are descended from this revision.
-        """
-        pass
-
-    @property
     def root(self):
         """
             The root directory of this revision

@@ -115,10 +115,6 @@ class HgRevision(IRevision):
         return [HgRevision(self.repo, x) for x in self.rev.parents()]
 
     @property
-    def children(self):
-        return [HgRevision(self.repo, x) for x in self.rev.children()]
-
-    @property
     def root(self):
         mf = self.rev.manifest()
 
