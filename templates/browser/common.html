@@ -2,7 +2,7 @@
     <b>Viewing revision {{ncommit.id|slice:":10"}}</b><br /><br />
     <b>Parents</b>
     <ul class='revisions'>
-    {% for parent in ncommit.parents %}
+    {% for parent in ncommit.parents.all %}
         <li><a href='{% url browse-revision project.slug parent.id %}'>{{parent.short_id}}</a></li>
     {% empty %}
         <li><span>None (Initial commit)</span></li>
@@ -10,7 +10,7 @@
     </ul>
     <b>Children</b>
     <ul class='revisions'>
-    {% for child in ncommit.children %}
+    {% for child in ncommit.children.all %}
         <li><a href='{% url browse-revision project.slug child.id %}'>{{child.short_id}}</a></li>
     {% empty %}
         <li><span>None (Head)</span></li>

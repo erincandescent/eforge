@@ -25,12 +25,8 @@ from pygments.formatters import HtmlFormatter
 from eforge.models import Project
 from eforge.decorators import project_page
 from eforge.utils.text import textscan
-from eforge import plugins
-
-def plugin_for(path):
-    vcs, path = path.split(':', 1)
-
-    return plugins.provider['vcs'][vcs](path)
+from eforge.vcs.models import Revision
+from eforge.vcs import project_repository
 
 def descend_tree(repo, tree, path):
     #try:
@@ -49,7 +45,7 @@ def descend_tree(repo, tree, path):
 
 @project_page
 def history(request, project):
-    repo = plugin_for(project.repo_path)
+    repo = project_repository(project)
 
     start = 0
     num   = 50
@@ -59,7 +55,9 @@ def history(request, project):
         num = int(request.GET['n'])
     end = start + num
 
-    revisions = repo.revisions(end + 1)
+    revision_set = Revision.objects.filter(project=project).order_by('-date')
+    revisions = revision_set[start:end].all()
+    
     end = min(end, len(revisions))
     prev = max(0, start - num)
 
@@ -77,13 +75,15 @@ def history(request, project):
 
 @project_page
 def file(request, project, commit = None, path = ''):
-    repo = plugin_for(project.repo_path)
+    repo = project_repository(project)
+
+    revision_set = Revision.objects.filter(project=project).order_by('-date')
 
     if commit is None:
-        ncommit = repo.head
+        ncommit = revision_set[0]
         commit  = ncommit.id
     else:
-        ncommit = repo.revision(commit)
+        ncommit = revision_set.get(id=commit)
 
     tree = ncommit.root
     obj  = descend_tree(repo, tree, path)
@@ -123,9 +123,9 @@ def file(request, project, commit = None, path = ''):
 
 @project_page
 def revision(request, project, commit):
-    repo = plugin_for(project.repo_path)
+    repo = project_repository(project)
 
-    ncommit = repo.revision(commit)
+    ncommit = Revision.objects.get(project=project, id=commit)
 
     return render_to_response('browser/revision.html', {
             'project':     project,

@@ -28,7 +28,7 @@
 
 <h3>Parents</h3>
 <ul class='revisions'>
-{% for parent in rev.parents %}
+{% for parent in rev.parents.all %}
     <li><span><a href='{% url browse-revision project.slug parent.id %}'>{{parent.short_id}}</a> ({{parent.short_message}})</span></li>
 {% empty %}
     <li><span>None (Initial commit)</span></li>
@@ -37,7 +37,7 @@
 
 <h3>Children</h3>
 <ul class='revisions'>
-{% for child in rev.children %}
+{% for child in rev.children.all %}
     <li><span><a href='{% url browse-revision project.slug child.id %}'>{{child.short_id}}</a> ({{child.short_message}})</span></li>
 {% empty %}
     <li><span>None (Head)</span></li>
