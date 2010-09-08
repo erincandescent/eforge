@@ -14,20 +14,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from eforge.menu import ItemOrder
-from eforge.update import urls
+from django.conf.urls.defaults import *
 
-EFORGE_PLUGIN = {
-    'name':     'EForge Update Framework',
-    'credit':   'Copyright &copy; 2010 Element43 and contributors',
-
-    'provides': {
-        'app': [('updates',       urls.patterns)],
-        'mnu': [('update-list',   ItemOrder(200, 'Activity'))],
-    },
-}
-
-# Make sure that the distributor gets loaded (in order to ensure notifications
-# are sent
-
-import eforge.update.distributor
+patterns = patterns('eforge.update.views',
+    url('^$', 'list',  name='update-list'),
+)

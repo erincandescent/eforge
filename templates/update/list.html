@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load eforge_user %}
+{% block title %} EForge - {{project}} updates {% endblock %}
+{% block content %}
+
+<div class='mbar'>Updates</div>
+<div class='content'>
+<ul>
+{% for update in update_list %}
+<li>
+    <b><img src='{{update.user|gravatar:16}}' alt='' />{{update.user}}:</b> <a href='{{update.url}}'>{{update.summary}}</a>
+</li>
+{% endfor %}
+</ul>
+</div>
+
+{% endblock %}

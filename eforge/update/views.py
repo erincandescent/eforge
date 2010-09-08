@@ -14,20 +14,18 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from eforge.menu import ItemOrder
-from eforge.update import urls
+from django.views.generic import list_detail
+from eforge.models import Project
+from eforge.decorators import project_page
+from eforge.update.models import Update
 
-EFORGE_PLUGIN = {
-    'name':     'EForge Update Framework',
-    'credit':   'Copyright &copy; 2010 Element43 and contributors',
-
-    'provides': {
-        'app': [('updates',       urls.patterns)],
-        'mnu': [('update-list',   ItemOrder(200, 'Activity'))],
-    },
-}
-
-# Make sure that the distributor gets loaded (in order to ensure notifications
-# are sent
-
-import eforge.update.distributor
+@project_page
+def list(request, project):
+    return list_detail.object_list(
+        request,
+        queryset = Update.objects.all().filter(project=project).order_by('-date'),
+        template_name = "update/list.html",
+        template_object_name = "update",
+        extra_context = {"project" : project},
+        paginate_by = 50,
+    )
