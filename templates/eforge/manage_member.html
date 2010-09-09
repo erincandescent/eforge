@@ -10,14 +10,15 @@
 <form method='POST' action='?pg=members&amp;a=g&amp;g={{group.pk}}'>
 {% endif %}
 <table>
-{% for prefix, group in perms.items %}
-    <tr><th colspan='2'>{{group.title}}</th></tr>
-    {% for perm, label in group.perms.items %}
+{% for title, group in perms.items %}
+    <tr><th colspan='2'>{{title}}</th></tr>
+    {% for perm in group %}
         <tr>
-            <td><input type="checkbox" name="{{prefix}}.{{perm}}" id="{{prefix}}.{{perm}}"/></td>
-            <td><label for="{{prefix}}.{{perm}}">{{label}}</label></td>
+            <td><input type="checkbox" name="{{perm.id}}" id="{{perm.id}}"/></td>
+            <td><label for="{{perm.id}}">{{perm.name}}</label></td>
         </tr>
     {% endfor %}
 {% endfor %}
 </table>
+<input type='submit' value='Change' />
 </form>

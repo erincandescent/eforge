@@ -16,6 +16,7 @@
 
 import urls
 from eforge.menu import ItemOrder
+from eforge.bugs.models import Bug, Comment
 
 EFORGE_PLUGIN = {
     'name':     'Issue Tracker',
@@ -31,12 +32,13 @@ EFORGE_PLUGIN = {
         ),
 
         'perms': (
-            ('bugs', { 'title': 'Tracker', 'perms': {
-                'add_bug':      'Create new issues',
-                'bug_comment':  'Comment on issues',
-                'change_bug':   'Change the issue information',
-                'delete_bug':   'Delete issues',
-            }}),
+            ('bugs', { 'title': 'Tracker', 'perms': [
+                (Bug,     'add_bug'),
+                (Bug,     'change_bug'),
+                (Bug,     'delete_bug'),
+                (Comment, 'add_comment'),
+                (Comment, 'delete_comment'),
+            ]}),
         ),
     },
 

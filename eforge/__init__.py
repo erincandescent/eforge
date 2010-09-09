@@ -35,9 +35,9 @@ EFORGE_PLUGIN = {
         ),
 
         'perms': (
-            ('eforge', { 'title': 'Project', 'perms': {
-                'manage': 'Can manage the project',
-            }}),
+            ('eforge', { 'title': 'Project', 'perms': [
+                (Project, 'manage'),
+            ]}),
         ),
     },
 }

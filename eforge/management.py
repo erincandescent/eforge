@@ -19,7 +19,8 @@ from django.http import HttpResponse
 from eforge.models import Project
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from eforge import plugins
 
 class ProjectForm(forms.ModelForm):
@@ -44,7 +45,27 @@ def project(request, project):
         'updated':      updated,
     }, context_instance=RequestContext(request))
 
+def get_permission(model, code):
+    ct = ContentType.objects.get_for_model(model)
+    return Permission.objects.get(content_type=ct, codename=code)
 
+#
+# Returns:
+# {
+#   'Title': [
+#     Permisison(), Permission(), ...
+#   ]
+# }
+def permission_list():
+    dict = {}
+    for group in plugins.provider['perms'].itervalues():
+        title = group['title']
+        perms = group['perms']
+        list = []
+        for perm in perms:
+            list.append(get_permission(*perm))
+        dict[title] = list
+    return dict
 
 def members(request, project):
     if 'a' in request.GET:
@@ -65,7 +86,7 @@ def members(request, project):
             'user':         user,
             'group':        group,
             'obj':          obj,
-            'perms':        plugins.provider['perms'],
+            'perms':        permission_list(),
         }, context_instance=RequestContext(request))
     else:
         return render_to_response('eforge/manage_members.html', {
