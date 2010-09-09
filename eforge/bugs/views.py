@@ -18,6 +18,7 @@ from django.db import models
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.views.generic.list_detail import object_list
 from django.core.urlresolvers import reverse
@@ -96,7 +97,7 @@ def showbug(request, project, bug_id):
                 attachment.bug = bug
                 attachment.comment = comment
                 attachment.save()
-            user.message_set.create(message='Bug successfully updated')
+            messages.info(request, 'Bug successfully updated')
             return redirect(reverse('bug-show', args = [project.slug, bug_id]))
         edit_form = True
     else:
