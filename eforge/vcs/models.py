@@ -53,7 +53,7 @@ class Revision(models.Model):
                 
             @classmethod
             def url(self, revision):
-                return reverse('browser-revision', 
+                return reverse('browse-revision', 
                     args=[revision.project.slug, revision.id])
             
             @classmethod
