@@ -10,18 +10,20 @@ The wiki also contains installation instructions:
 Directory tree information:
 
 |
-|- eforge       EForge source code root (Python module) & core components
+|- eforge           EForge source code root (Python module) & core components
 |  \
-|  |- browser   Source browser plugin
+|  |- browser       Source browser plugin
+|  |- bugs          Issue tracker plugin
+|  |- utils         Utility functions
+|  |- wiki          Wiki plugin
+|  |- update        Update notification system
 |  |  \
-|  |  |- vcs    VCS plugins root
-|  |  |  \
-|  |  |  |- git Git repository browser
-|  |  |  |- hg  Mercurial repository browser
-|  |  |  |- ...
-|  |- bugs      Issue tracker plugin
-|  |- utils     Utility functions
-|  |- wiki      Wiki plugin
+|  |   |- email     E-Mail notification backend plugin
+|  |   |- twitter   Twitter notification backend plugin
+|  |- vcs           VCS integration plugin
+|  |  \
+|  |   |- git       Git VCS plugin
+|  |   |- hg        Hg VCS plugin
 |
 |- templates    EForge templates root & EForge overall template
 |  \
