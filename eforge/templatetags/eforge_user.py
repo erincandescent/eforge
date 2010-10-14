@@ -33,3 +33,30 @@ def gravatar(user, size=None):
     if size:
         url += '?%s' % urlencode({'s': size})
     return url
+
+@register.tag(name='has_project_perm')
+def has_project_perm(parser, token):
+    try:
+        tag_name, var, member, project, perm = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "%r tag requires four arguments" % token.contents.split()[0]
+    return HasProjectPermNode(var, member, project, perm)
+    
+class HasProjectPermNode(template.Node):
+    def __init__(self, var, member, project, perm):
+        self.var = var
+        self.member  = template.Variable(member)
+        self.project = template.Variable(project)
+        self.perm    = template.Variable(perm)
+        
+    def render(self, context):
+        try:
+            member = self.member.resolve(context)
+            project = self.project.resolve(context)
+            perm = self.perm.resolve(context)
+            
+            state = member.has_project_perm(project, perm)
+            context[self.var] = state
+            return ''
+        except template.VariableDoesNotExist:
+            return ''
