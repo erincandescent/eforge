@@ -153,8 +153,10 @@ class IRevision(object):
             msg = self.message.split('. ', 1)[0].strip()
         except:
             msg = self.message
-        if len(msg) > 100:
-            msg = msg[0:100].rsplit(' ', 1)[0].strip() + '...'
+        
+        if len(msg) > 250:
+            msg = msg[0:250].rsplit(' ', 1)[0].strip() + '...'
+        
         return msg
 
     @property
