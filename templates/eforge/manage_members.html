@@ -3,6 +3,6 @@
     <li class='group'><a href='?pg=members&amp;a=g&amp;g={{group.pk}}'>{{group}}</a></li>
 {% endfor %}
 {% for member in project.members.all %}
-    <li class='user'><a href='?pg=members&amp;a=u&amp;u={{user.pk}}'>{{member}}</a></li>
+    <li class='user'><a href='?pg=members&amp;a=u&amp;u={{member.pk}}'>{{member}}</a></li>
 {% endfor %}
 </ul>

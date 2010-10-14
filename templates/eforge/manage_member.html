@@ -1,20 +1,18 @@
-{% if user %}
-    {{user.username}}
-{% else %}
-    {{group.name}}
-{% endif %}
+{% load eforge_user %}
+<b>{{member}}</b>
 
-{% if user %}
-<form method='POST' action='?pg=members&amp;a=u&amp;u={{user.pk}}'>
+{% if group %}
+<form method='POST' action='?pg=members&amp;a=g&amp;g={{member.pk}}'>
 {% else %}
-<form method='POST' action='?pg=members&amp;a=g&amp;g={{group.pk}}'>
+<form method='POST' action='?pg=members&amp;a=u&amp;u={{member.pk}}'>
 {% endif %}
 <table>
 {% for title, group in perms.items %}
     <tr><th colspan='2'>{{title}}</th></tr>
     {% for perm in group %}
+        {% has_project_perm has_perm member project perm %}
         <tr>
-            <td><input type="checkbox" name="{{perm.id}}" id="{{perm.id}}"/></td>
+            <td><input type="checkbox" name="{{perm.id}}" id="{{perm.id}}" {% if has_perm %}checked="checked"{% endif %}/></td>
             <td><label for="{{perm.id}}">{{perm.name}}</label></td>
         </tr>
     {% endfor %}

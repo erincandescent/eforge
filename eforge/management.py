@@ -16,7 +16,7 @@
 
 from django import forms
 from django.http import HttpResponse
-from eforge.models import Project
+from eforge.models import Project, UserPermission, GroupPermission
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.models import User, Group, Permission
@@ -66,6 +66,34 @@ def permission_list():
             list.append(get_permission(*perm))
         dict[title] = list
     return dict
+    
+def flat_permissions():
+    l = []
+    for pl in permission_list().itervalues():
+        l.extend(pl)
+    return l
+
+def set_permission(project, member, permission, value):
+    kwargs = { 'project': project, 'permission': permission }
+    if isinstance(member, User):
+        type = UserPermission
+        kwargs['user'] = member
+    else:
+        type = GroupPermission
+        kwargs['group'] = member
+        
+    try:
+        mperm = type.objects.get(**kwargs)
+    except type.DoesNotExist, e:
+        mperm = None
+        
+    if not value and mperm:
+        # Removing permission
+        mperm.delete()
+    elif value and not mperm:
+        mperm = type(**kwargs)
+        mperm.save()
+        
 
 def members(request, project):
     if 'a' in request.GET:
@@ -75,17 +103,21 @@ def members(request, project):
         obj   = None
 
         if act == 'g':
-            group = Group.objects.get(pk=request.GET['g'])
-            obj   = group
+            group  = Group.objects.get(pk=request.GET['g'])
+            member = group
         else:
-            user = User.objects.get(pk=request.GET['u'])
-            obj  = user
+            user   = User.objects.get(pk=request.GET['u'])
+            member = user
+            
+        if request.method == 'POST':
+            for perm in flat_permissions():
+                set_permission(project, member, perm, str(perm.id) in request.POST)
 
         return render_to_response('eforge/manage_member.html', {
             'project':      project,
             'user':         user,
             'group':        group,
-            'obj':          obj,
+            'member':       member,
             'perms':        permission_list(),
         }, context_instance=RequestContext(request))
     else:
