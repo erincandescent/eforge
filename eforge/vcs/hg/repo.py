@@ -15,7 +15,7 @@
 #
 
 import StringIO
-from eforge.browser.interface import *
+from eforge.vcs.interface import *
 from mercurial.node import short
 from mercurial.ui import ui
 from mercurial.localrepo import localrepository

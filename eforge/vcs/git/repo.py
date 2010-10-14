@@ -17,7 +17,7 @@
 import dulwich
 import StringIO
 from datetime import datetime
-from eforge.browser.interface import *
+from eforge.vcs.interface import *
 from eforge.vcs.git.models import RevisionRelation
 
 class GitRepository(IRepository):
