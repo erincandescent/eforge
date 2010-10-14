@@ -15,7 +15,7 @@
 #
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import User, AnonymousUser, Group, Permission
 from django.db import models
 import plugins
 from operator import itemgetter
@@ -86,11 +86,45 @@ class GroupPermission(models.Model):
                                 return False
 """
 
+def _group_get_project_permissions(group, project):
+    if not hasattr(group, '_project_perm_cache'):
+        group._project_perm_cache = {}
+        
+    if not project in user._project_perm_cache:
+        cache = set(
+                [u"%s.%s" % (p.content_type.app_label, p.codename)
+                    for p in
+                        Permission.objects.filter(
+                            grouppermission__project=project,
+                            grouppermission__group=group).all()])
+        group._project_perm_cache[project] = cache
+    else:
+        cache = group.project_perm_cache[project]
+    return cache
+
+def _user_get_project_permissions(user, project):
+    if not hasattr(user, '_project_perm_cache'):
+        user._project_perm_cache = {}
+        
+    if not project in user._project_perm_cache:
+        cache = set(
+                [u"%s.%s" % (p.content_type.app_label, p.codename) 
+                    for p in 
+                        Permission.objects.filter(
+                            userpermission__project=project, 
+                            userpermission__user=user).all()])
+        for group in user.groups.all():
+            cache.update(_group_get_project_permissions(group, project))
+        user._project_perm_cache[project] = cache
+    else:
+        cache = user._project_perm_cache[project]
+    return cache
+
 def group_has_project_perm(group, project, perm):
     if group.has_perm(perm):
         return True
 
-    if project.grouppermission_set.filter(group=group, permission=perm).count():
+    if perm in _group_get_project_permissions(group, project):
         return True
     return False
 
@@ -98,14 +132,11 @@ def user_has_project_perm(user, project, perm):
     if user.has_perm(perm):
         return True
 
-    if project.userpermission_set.filter(user=user, permission=perm).count():
+    if perm in _user_get_project_permissions(user, project):
         return True
-
-    for group in user.groups.all():
-        if group_has_project_perm(group, project, perm):
-            return True
 
     return False
 
 User.has_project_perm = user_has_project_perm
 Group.has_project_perm = group_has_project_perm
+AnonymousUser.has_project_perm = lambda u, pr, pe: False
