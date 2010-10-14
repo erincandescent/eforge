@@ -20,6 +20,9 @@ from django.template.loader import get_template
 from django.contrib.auth.models import User, Group
 from django.utils.decorators import available_attrs
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.utils.http import urlquote
+from django.template import RequestContext
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from functools import wraps
 
 def project_page(view):
@@ -57,11 +60,10 @@ def _proj_user_passes_test(test_func, login_url=None,
             def _wrapped_view(request, project, *args, **kwargs):
                 if test_func(request.user, project):
                     return view_func(request, project, *args, **kwargs)
-                elif user.is_authenticated():
+                elif request.user.is_authenticated():
                     tmpl = get_template('400.html')
-                    return HttpResponse(
-                        tmpl.render(RequestContext(request, {})),
-                        status=400)
+                    return HttpResponseForbidden(
+                        tmpl.render(RequestContext(request, {})))
                 else:
                     path = urlquote(request.get_full_path())
                     tup = login_url, redirect_field_name, path
