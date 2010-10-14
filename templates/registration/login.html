@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %} Login to EForge {% endblock %}
+{% block content %}
+
+{% if form.errors %}
+<div class='mbar'>Error</div>
+<div class='content'>
+    Your username did not exist or your password was incorrect
+</div>
+{% endif %}
+
+<div class='mbar'>Login</div>
+<div class='content'>
+  Please enter your account details
+  <form method="post" action="{% url django.contrib.auth.views.login %}">
+  {% csrf_token %}
+    <table class='form'>
+      <tr>
+	<th>{{form.username.label_tag}}:</th>
+	<td>{{form.username}}
+	</td>
+      </tr>
+      <tr>
+	<th>{{form.password.label_tag}}:</th>
+	<td>{{form.password}}<br />
+	    <a href='{% url django.contrib.auth.views.password_reset %}'>(Forgotten your password?)</a></td>
+      </tr>
+    </table>
+    <br />
+    <div class='fbox'><input type="submit" value="Login" /></div>
+    <input type="hidden" name="next" value="{{next}}" />
+  </form>
+</div>
+
+{% endblock %}
