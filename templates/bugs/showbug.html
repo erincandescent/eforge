@@ -2,10 +2,10 @@
 {% load eforge_user %}
 {% block title %} {{project.name}} - Issue {{bug.slug}}: {{bug.title}} {% endblock %}
 {% block headinsert %}
-<script type='text/javascript' src='/static/issues/showbug.js'></script>
+<script type='text/javascript' defer src='/static/issues/showbug.js'></script>
 <link rel='stylesheet' type='text/css' href='/static/issues/showbug.css'>
 {% if edit_form %}
-<script type='text/javascript'>$(function() { $('#bug-tabs').tabs('select', 'bug-update'); });</script>
+<script type='text/javascript' defer>$(function() { $('#bug-tabs').tabs('select', 'bug-update'); });</script>
 {% endif %}
 {% endblock %}
 {% block content %}
@@ -101,6 +101,9 @@
 <h3>Update</h3>
 {% if user.is_active %}
 <form method='POST' enctype="multipart/form-data" action="{% url bug-show project.slug bug.id %}" name='bug'>
+{{ bug_form.non_field_errors }}
+{{ comment_form.non_field_errors }}
+{% for form in attach_forms.forms %} {{ form.non_field_errors }} {% endfor %}
 <table class='form'>
 {% with bug_form as form     %}{% include "bugs/form_frag.html" %}{% endwith %}
 {% with comment_form as form %}{% include "bugs/form_frag.html" %}{% endwith %}

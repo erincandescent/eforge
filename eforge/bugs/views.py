@@ -51,13 +51,14 @@ class BugForm(forms.ModelForm):
     def protect_clean(self, after):
         for field in self.Meta.protected:
             self.cleaned_data[field] = getattr(self.instance, field)
-        after(self)
+        return after()
 
     def protect(self, user):
         if not user.has_perm('bugs.change_bug'):
             for field in self.Meta.protected:
                 self.fields[field].widget = forms.HiddenInput()
-            self.clean = lambda: self.protect_clean(self.clean)
+            clean = self.clean
+            self.clean = lambda: self.protect_clean(clean)
 
     def save_actions(self, comment):
         bugobj = Bug.objects.get(pk=self.instance.pk)
